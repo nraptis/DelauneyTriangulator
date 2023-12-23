@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct DelauneyTriangulatorApp: App {
+    
+    @State var sceneViewModel = SceneViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContainerView()
+                .environment(sceneViewModel)
         }
     }
 }
