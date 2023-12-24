@@ -150,22 +150,43 @@ class TriangleScene: GraphicsDelegate {
         
 
         
-        var hullPoints = [TriangulationPoint]()
-        var innerPoints = [TriangulationPoint]()
         
-        for point in sceneViewModel.polygon {
-            hullPoints.append(DelauneyTriangulator.shared.partsFactory.withdrawPoint(x: point.x,
-                                                                                     y: point.y))
-        }
+        
+        
         
         switch sceneViewModel.triangulationMode {
             
         case .delauney:
             
-            DelauneyTriangulator.shared.delauneyTriangulation(points: hullPoints)
+            var innerPoints = [SIMD2<Float>]()
+            
+            for point in sceneViewModel.polygon {
+                innerPoints.append(.init(point.x, point.y))
+            }
+            
+            for point in sceneViewModel.innerPoints {
+                innerPoints.append(.init(point.x, point.y))
+            }
+            
+            DelauneyTriangulator.shared.delauneyTriangulation(points: innerPoints)
             
             break
         case .constrainedDelauney:
+            
+            var innerPoints = [SIMD2<Float>]()
+            var hullPoints = [SIMD2<Float>]()
+            
+            for point in sceneViewModel.polygon {
+                hullPoints.append(.init(point.x, point.y))
+            }
+            
+            for point in sceneViewModel.innerPoints {
+                innerPoints.append(.init(point.x, point.y))
+            }
+            
+            DelauneyTriangulator.shared.delauneyConstrainedTriangulation(points: innerPoints,
+                                                                         hull: hullPoints)
+            
             break
             
         }
@@ -251,6 +272,18 @@ class TriangleScene: GraphicsDelegate {
             
             index1 = index2
             index2 += 1
+        }
+        
+        var index = 0
+        while index < sceneViewModel.innerPoints.count {
+            
+            let point = sceneViewModel.innerPoints[index]
+            
+            smallDotBuffer.add(translation: .init(x: point.x, y: point.y),
+                               scale: 0.75, rotation: 0.0, red: 0.5, green: 0.25, blue: 1.0, alpha: 0.75)
+            
+            
+            index += 1
         }
         
         /*

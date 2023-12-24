@@ -89,6 +89,7 @@
 		E86931A02B3788680067A51E /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E869319E2B3788680067A51E /* FileUtils.swift */; };
 		E86931A12B3788680067A51E /* FileBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E869319F2B3788680067A51E /* FileBuffer.swift */; };
 		E86931A32B378D0C0067A51E /* Uniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931A22B378D0C0067A51E /* Uniforms.swift */; };
+		E86931A52B37DB610067A51E /* PolyPointBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931A42B37DB610067A51E /* PolyPointBucket.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +176,7 @@
 		E869319E2B3788680067A51E /* FileUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		E869319F2B3788680067A51E /* FileBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileBuffer.swift; sourceTree = "<group>"; };
 		E86931A22B378D0C0067A51E /* Uniforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Uniforms.swift; sourceTree = "<group>"; };
+		E86931A42B37DB610067A51E /* PolyPointBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolyPointBucket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -260,6 +262,7 @@
 				E82B5E012B37775700CFED63 /* DelauneyTriangulatorPartsFactory.swift */,
 				E82B5E022B37775700CFED63 /* EdgeGridBucket.swift */,
 				E82B5E002B37775700CFED63 /* TriangulationData.swift */,
+				E86931A42B37DB610067A51E /* PolyPointBucket.swift */,
 			);
 			path = "[Delauney]";
 			sourceTree = "<group>";
@@ -513,6 +516,7 @@
 				E869312C2B377A3D0067A51E /* ContainerView.swift in Sources */,
 				E82B5E1A2B37775700CFED63 /* TriangulationData.swift in Sources */,
 				E82B5E262B37775700CFED63 /* Graphics.swift in Sources */,
+				E86931A52B37DB610067A51E /* PolyPointBucket.swift in Sources */,
 				E82B5E1D2B37775700CFED63 /* DelauneyTriangulator.swift in Sources */,
 				E82B5E1F2B37775700CFED63 /* BatchDrawerSpriteColored2D.swift in Sources */,
 				E86931342B377D680067A51E /* Shape.metal in Sources */,
@@ -662,7 +666,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -690,7 +694,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

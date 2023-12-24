@@ -36,20 +36,22 @@ import UIKit
     var sceneModel = SceneModel()
     var number = 9
     
-    var polygonPointCountString: String = "42"
+    var polygonPointCountString: String = "24"
+    var innerPointCountString: String = "165"
     
     var polygon = [Point]()
+    var innerPoints = [Point]()
     
     var width = Float(320.0)
     var height = Float(320.0)
     
-    var triangulationMode = TriangulationMode.delauney
+    var triangulationMode = TriangulationMode.constrainedDelauney
     
     func generateRandomPolygon(width: Float, height: Float, count: Int) {
         
         var count = count
         if count < 3 { count = 3 }
-        if count > 75 { count = 75 }
+        if count > 50 { count = 50 }
         polygonPointCountString = String(count)
         
         var reloop = true
@@ -64,9 +66,13 @@ import UIKit
             } else {
                 loops += 1
                 
-                
-                if (loops % 10000) == 0 && loops != 0 {
+                if (loops % 5000) == 0 && loops != 0 {
                     print("Loops = \(loops)")
+                    
+                    count -= 4
+                    if count < 3 {
+                        count = 3
+                    }
                 }
             }
         }
@@ -87,7 +93,6 @@ import UIKit
         
         let minX = edgeBuffer
         let maxX = (width - edgeBuffer - edgeBuffer)
-        
         let minY = edgeBuffer
         let maxY = (height - edgeBuffer - edgeBuffer)
         
@@ -193,7 +198,6 @@ import UIKit
             return false
         }
         
-        let lastSegmentPoint0 = polygon[polygon.count - 2]
         let lastSegmentPoint1 = polygon[polygon.count - 1]
         let lastSegmentPoint2 = polygon[0]
         
@@ -212,26 +216,71 @@ import UIKit
             
             index += 1
         }
-        
-        /*
-        index = 0
-        while index < (polygon.count - 2) {
-            
-            let closestPoint = Math.segmentClosestPoint(point: polygon[index],
-                                                        linePoint1: lastSegmentPoint0,
-                                                        linePoint2: lastSegmentPoint1)
-            
-            let distanceSquared = Math.distanceSquared(point1: closestPoint,
-                                                       point2: polygon[index])
-            if distanceSquared <= closeThreshold {
-                return false
-            }
-            
-            index += 1
-        }
-        */
-        
         return true
     }
     
+    func generateRandomPoints(width: Float, height: Float, count: Int) {
+        
+        
+        var count = count
+        if count < 0 { count = 0 }
+        if count > 2048 { count = 2048 }
+        innerPointCountString = String(count)
+        
+        innerPoints.removeAll(keepingCapacity: true)
+        
+        let closeThreshold = Float(12.0 * 12.0)
+        
+        var edgeBuffer = Float(16.0)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            edgeBuffer = 42.0
+        }
+        
+        let minX = edgeBuffer
+        let maxX = (width - edgeBuffer - edgeBuffer)
+        let minY = edgeBuffer
+        let maxY = (height - edgeBuffer - edgeBuffer)
+        
+        while innerPoints.count < count {
+            
+            var tries = 0
+            
+            while tries < 2048 {
+                
+                let newX = Float.random(in: minX...maxX)
+                let newY = Float.random(in: minY...maxY)
+                let newPoint = Point(x: newX,
+                                     y: newY)
+                
+                var overlap = false
+                
+                for point in innerPoints {
+                    let distanceSquared = Math.distanceSquared(point1: point, point2: newPoint)
+                    if distanceSquared < closeThreshold {
+                        overlap = true
+                        break
+                    }
+                }
+                
+                for point in polygon {
+                    let distanceSquared = Math.distanceSquared(point1: point, point2: newPoint)
+                    if distanceSquared < closeThreshold {
+                        overlap = true
+                        break
+                    }
+                }
+                
+                if overlap == false {
+                    innerPoints.append(newPoint)
+                    break
+                } else {
+                    tries += 1
+                }
+            }
+            
+            if tries >= 2048 {
+                return
+            }
+        }
+    }
 }

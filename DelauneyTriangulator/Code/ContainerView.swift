@@ -18,9 +18,15 @@ struct ContainerView: View {
                 TriangleSceneView(width: geometry.size.width,
                                   height: geometry.size.height)
                 .onAppear {
+                    let polygonCount = Int(sceneViewModel.polygonPointCountString) ?? 32
                     sceneViewModel.generateRandomPolygon(width: Float(geometry.size.width),
                                                          height: Float(geometry.size.height),
-                                                         count: 42)
+                                                         count: polygonCount)
+                    
+                    let innerPointCount = Int(sceneViewModel.innerPointCountString) ?? 64
+                    sceneViewModel.generateRandomPoints(width: Float(geometry.size.width),
+                                                        height: Float(geometry.size.height),
+                                                        count: innerPointCount)
                 }
             }
         }

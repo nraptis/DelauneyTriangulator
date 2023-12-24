@@ -204,5 +204,46 @@ class DelauneyTriangulatorPartsFactory {
     ///
     ///
     ////////////////
+    
+    
+    ////////////////
     ///
+    ///
+    private var triangulationLineSegments = [TriangulationLineSegment]()
+    var _maxTriangulationLineSegmentCount = 0
+    func depositLineSegment(_ triangulationLineSegment: TriangulationLineSegment) {
+        if DEBUG {
+            for check in triangulationLineSegments {
+                if check === triangulationLineSegment {
+                    print("already exists, double deposit triangulationLineSegment")
+                }
+            }
+        }
+        
+        triangulationLineSegments.append(triangulationLineSegment)
+        triangulationLineSegment.clear()
+        
+        if DEBUG {
+            if triangulationLineSegments.count > _maxTriangulationLineSegmentCount {
+                _maxTriangulationLineSegmentCount = triangulationLineSegments.count
+                print("new max triangulation line segments: \(_maxTriangulationLineSegmentCount)")
+            }
+        }
+    }
+    func withdrawLineSegment(point1: TriangulationPoint,
+                             point2: TriangulationPoint) -> TriangulationLineSegment {
+        if triangulationLineSegments.count > 0 {
+            let result = triangulationLineSegments[triangulationLineSegments.count - 1]
+            triangulationLineSegments.removeLast()
+            result.point1 = point1
+            result.point2 = point2
+            return result
+        }
+        return TriangulationLineSegment(point1: point1,
+                                        point2: point2)
+    }
+    ///
+    ///
+    ////////////////
+    
 }

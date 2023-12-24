@@ -6,47 +6,95 @@
 //
 
 import Foundation
+import simd
 
 class DelauneyTriangulator {
     
     static let shared = DelauneyTriangulator()
-    
-    //private 
     let partsFactory: DelauneyTriangulatorPartsFactory
     private let triangulationData: TriangulationData
     private(set) var triangles: [TriangulationTriangle]
+    private(set) var trianglesTemp: [TriangulationTriangle]
     private var edgeStack: [TriangulationEdge]
     private var faceSet: Set<TriangulationFace>
+    
+    private var triangulationPointList: [TriangulationPoint]
+    private var triangulationHullList: [TriangulationPoint]
+    private var lineSegmentList: [TriangulationLineSegment]
+    
     private var edgeGridBucket: EdgeGridBucket
+    private var polyPointBucket: PolyPointBucket
+    
     private let epsilon: Float
     
     private init() {
         partsFactory = DelauneyTriangulatorPartsFactory()
         triangulationData = TriangulationData(partsFactory: partsFactory)
         triangles = [TriangulationTriangle]()
+        trianglesTemp = [TriangulationTriangle]()
         edgeStack = [TriangulationEdge]()
         faceSet = Set<TriangulationFace>()
-        edgeGridBucket = EdgeGridBucket()
+        
+        triangulationPointList = [TriangulationPoint]()
+        triangulationHullList = [TriangulationPoint]()
+        lineSegmentList = [TriangulationLineSegment]()
         epsilon = 0.00001
+        
+        edgeGridBucket = EdgeGridBucket()
+        polyPointBucket = PolyPointBucket()
     }
     
-    func delauneyConstrainedTriangulation(points: [TriangulationPoint],
-                                          hull: [TriangulationPoint],
+    func delauneyConstrainedTriangulation(points: [SIMD2<Float>],
+                                          hull: [SIMD2<Float>],
                                           superTriangleSize: Float = 8192) {
-        if delauneyConstrainedTriangulation(points: points,
-                                            hull: hull,
-                                            triangulationData: triangulationData,
+        
+        for triangulationPoint in triangulationPointList {
+            partsFactory.depositPoint(triangulationPoint)
+        }
+        triangulationPointList.removeAll(keepingCapacity: true)
+        triangulationHullList.removeAll(keepingCapacity: true)
+        
+        for point in points {
+            let triangulationPoint = partsFactory.withdrawPoint(x: point.x,
+                                                                y: point.y)
+            triangulationPoint.isHullPoint = false
+            triangulationPointList.append(triangulationPoint)
+        }
+        
+        for point in hull {
+            let triangulationPoint = partsFactory.withdrawPoint(x: point.x,
+                                                                y: point.y)
+            triangulationPoint.isHullPoint = true
+            triangulationHullList.append(triangulationPoint)
+            triangulationPointList.append(triangulationPoint)
+        }
+        
+        if delauneyConstrainedTriangulation(triangulationData: triangulationData,
                                             superTriangleSize: superTriangleSize) {
             populateTriangles(triangulationData: triangulationData)
+            removeTrianglesOutsideHull()
+            
         } else {
             reset()
         }
     }
     
-    func delauneyTriangulation(points: [TriangulationPoint],
+    func delauneyTriangulation(points: [SIMD2<Float>],
                                superTriangleSize: Float = 8192) {
-        if delauneyTriangulation(points: points,
-                                 triangulationData: triangulationData,
+        
+        for triangulationPoint in triangulationPointList {
+            partsFactory.depositPoint(triangulationPoint)
+        }
+        triangulationPointList.removeAll(keepingCapacity: true)
+        triangulationHullList.removeAll(keepingCapacity: true)
+        
+        for point in points {
+            let triangulationPoint = partsFactory.withdrawPoint(x: point.x,
+                                                                y: point.y)
+            triangulationPointList.append(triangulationPoint)
+        }
+        
+        if delauneyTriangulation(triangulationData: triangulationData,
                                  superTriangleSize: superTriangleSize) {
             populateTriangles(triangulationData: triangulationData)
         } else {
@@ -54,30 +102,25 @@ class DelauneyTriangulator {
         }
     }
     
-    private func delauneyConstrainedTriangulation(points: [TriangulationPoint],
-                                                  hull: [TriangulationPoint],
-                                                  triangulationData: TriangulationData,
+    private func delauneyConstrainedTriangulation(triangulationData: TriangulationData,
                                                   superTriangleSize: Float = 8192) -> Bool {
-        if delauneyTriangulation(points: points,
-                                 triangulationData: triangulationData,
+        if delauneyTriangulation(triangulationData: triangulationData,
                                  superTriangleSize: superTriangleSize) {
-            if constrainWithHull(triangleData: triangulationData,
-                       hull: hull) {
+            if constrainWithHull(triangleData: triangulationData) {
                 return true
             }
         }
         return false
     }
     
-    private func delauneyTriangulation(points: [TriangulationPoint],
-                                       triangulationData: TriangulationData,
+    private func delauneyTriangulation(triangulationData: TriangulationData,
                                        superTriangleSize: Float = 8192) -> Bool {
         
         reset()
         
         triangulationData.addSuperTriangle(superTriangleSize: superTriangleSize)
         
-        for point in points {
+        for point in triangulationPointList {
             if !insert(point: point, triangulationData: triangulationData) {
                 return false
             }
@@ -98,18 +141,6 @@ class DelauneyTriangulator {
         edgeStack.removeAll(keepingCapacity: true)
         faceSet.removeAll(keepingCapacity: true)
         triangulationData.reset()
-    }
-    
-    func populateTriangles(triangulationData: TriangulationData) {
-        for face in triangulationData.faces {
-            let point1 = face.edge.vertex.point
-            let point2 = face.edge.nextEdge.vertex.point
-            let point3 = face.edge.nextEdge.nextEdge.vertex.point
-            let triangle = partsFactory.withdrawTriangle(point1: point1,
-                                                         point2: point2,
-                                                         point3: point3)
-            triangles.append(triangle)
-        }
     }
     
     func insert(point: TriangulationPoint, triangulationData: TriangulationData) -> Bool {
@@ -248,15 +279,15 @@ class DelauneyTriangulator {
         let factorA23 = point2.x - point3.x
         let factorA1T = point1.x - target.x
         let factorA2T = point2.x - target.x
-
+        
         let factorB13 = point1.y - point3.y
         let factorB23 = point2.y - point3.y
         let factorB1T = point1.y - target.y
         let factorB2T = point2.y - target.y
-
+        
         let cosA = factorA13 * factorA23 + factorB13 * factorB23
         let cosB = factorA2T * factorA1T + factorB2T * factorB1T
-
+        
         if cosA >= 0.0 && cosB >= 0.0 {
             return false
         }
@@ -264,7 +295,7 @@ class DelauneyTriangulator {
         if cosA < 0.0 && cosB < 0.0 {
             return true
         }
-
+        
         let sinABLHS = (factorA13 * factorB23 - factorA23 * factorB13) * cosB
         let sinABRHS = (factorA2T * factorB1T - factorA1T * factorB2T) * cosA
         
@@ -282,7 +313,7 @@ class DelauneyTriangulator {
         
         let vertexA = edge1.vertex; let vertexB = edge1.nextEdge.vertex
         let vertexC = edge1.previousEdge.vertex; let vertexD = edge4.nextEdge.vertex
-
+        
         let pointB = edge2.vertex.point
         let pointD = edge5.vertex.point
         let oppositeVertexA = edge4.previousEdge.vertex
@@ -302,7 +333,7 @@ class DelauneyTriangulator {
         edge4.nextEdge = edge6; edge4.previousEdge = edge2
         edge5.nextEdge = edge1; edge5.previousEdge = edge3
         edge6.nextEdge = edge2; edge6.previousEdge = edge4
-
+        
         edge1.vertex = vertexB; edge2.vertex = oppositeVertexB
         edge3.vertex = vertexC; edge4.vertex = oppositeVertexD
         edge5.vertex = vertexD; edge6.vertex = vertexA
@@ -330,7 +361,7 @@ class DelauneyTriangulator {
         
         let vertexA = edge1.vertex; let vertexB = edge1.nextEdge.vertex
         let vertexC = edge1.previousEdge.vertex; let vertexD = edge4.nextEdge.vertex
-
+        
         let pointB = edge2.vertex.point
         let pointD = edge5.vertex.point
         let oppositeVertexA = edge4.previousEdge.vertex
@@ -350,7 +381,7 @@ class DelauneyTriangulator {
         edge4.nextEdge = edge6; edge4.previousEdge = edge2
         edge5.nextEdge = edge1; edge5.previousEdge = edge3
         edge6.nextEdge = edge2; edge6.previousEdge = edge4
-
+        
         edge1.vertex = vertexB; edge2.vertex = oppositeVertexB
         edge3.vertex = vertexC; edge4.vertex = oppositeVertexD
         edge5.vertex = vertexD; edge6.vertex = vertexA
@@ -380,7 +411,7 @@ class DelauneyTriangulator {
             if fudge > 1_000 {
                 return false
             }
-
+            
             let edge = edgeStack.removeFirst()
             
             if edge.oppositeEdge === nil {
@@ -427,19 +458,18 @@ class DelauneyTriangulator {
         }
     }
     
-    func constrainWithHull(triangleData: TriangulationData,
-                           hull: [TriangulationPoint]) -> Bool {
-        if hull.count < 3 {
+    func constrainWithHull(triangleData: TriangulationData) -> Bool {
+        if triangulationHullList.count < 3 {
             return true
         }
         
         edgeGridBucket.build(triangulationData: triangleData)
         
-        var index1 = hull.count - 1
+        var index1 = triangulationHullList.count - 1
         var index2 = 0
-        while index2 < hull.count {
-            let hullPoint1 = hull[index1]
-            let hullPoint2 = hull[index2]
+        while index2 < triangulationHullList.count {
+            let hullPoint1 = triangulationHullList[index1]
+            let hullPoint2 = triangulationHullList[index2]
             
             findIntersectingEdges(triangleData: triangleData,
                                   hullPoint1: hullPoint1,
@@ -514,30 +544,6 @@ class DelauneyTriangulator {
         }
     }
     
-    //TODO: Bottleneck: This is taking 3,000+ loops each call.
-    //static var containsEdgeMaxLoops = 0
-    /*
-    func containsEdge(triangleData: TriangulationData,
-                      point1: TriangulationPoint ,
-                      point2: TriangulationPoint) -> Bool {
-        
-        var loops = 0
-        for edge in triangleData.edges {
-            
-            loops += 1
-            
-            let edgePoint2 = edge.vertex.point
-            let edgePoint1 = edge.previousEdge.vertex.point
-            
-            if (edgePoint1 == point1 && edgePoint2 == point2) || (edgePoint1 == point2 && edgePoint2 == point1) {
-                return true
-            }
-        }
-        
-        return false
-    }
-    */
-    
     func splitTriangleFace(face: TriangulationFace,
                            point: TriangulationPoint,
                            triangulationData: TriangulationData) {
@@ -572,7 +578,7 @@ class DelauneyTriangulator {
                 if oppositeEdge.oppositeEdge !== nil {
                     continue
                 }
-
+                
                 if pointA == oppositeEdge.previousEdge.vertex.point && pointB == oppositeEdge.vertex.point {
                     edge.oppositeEdge = oppositeEdge
                     oppositeEdge.oppositeEdge = edge
@@ -586,8 +592,8 @@ class DelauneyTriangulator {
     }
     
     func createFace(edge: TriangulationEdge,
-                       point: TriangulationPoint,
-                       triangulationData: TriangulationData) {
+                    point: TriangulationPoint,
+                    triangulationData: TriangulationData) {
         
         let point1 = point
         let point2 = edge.previousEdge.vertex.point
@@ -643,7 +649,7 @@ class DelauneyTriangulator {
     }
     
     func removeFaceAndClearOpposites(face: TriangulationFace,
-                    triangulationData: TriangulationData) {
+                                     triangulationData: TriangulationData) {
         
         let edge1 = face.edge
         let edge2 = edge1.nextEdge!
@@ -658,9 +664,9 @@ class DelauneyTriangulator {
         if edge3.oppositeEdge !== nil {
             edge3.oppositeEdge.oppositeEdge = nil
         }
-    
+        
         triangulationData.remove(face: face)
-
+        
         triangulationData.remove(edge: edge1)
         triangulationData.remove(edge: edge2)
         triangulationData.remove(edge: edge3)
@@ -700,6 +706,14 @@ class DelauneyTriangulator {
         }
     }
     
+    func between(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Bool {
+        if fabsf(x1 - x2) > epsilon {
+            return (((x1 <= x3) && (x3 <= x2)) || ((x1 >= x3) && (x3 >= x2)))
+        } else {
+            return ((y1 <= y3) && (y3 <= y2)) || ((y1 >= y3) && (y3 >= y2))
+        }
+    }
+    
     func lineSegmentIntersectsLineSegment(line1Point1: TriangulationPoint,
                                           line1Point2: TriangulationPoint,
                                           line2Point1: TriangulationPoint,
@@ -707,39 +721,19 @@ class DelauneyTriangulator {
         
         let maxX2 = max(line2Point1.x, line2Point2.x)
         let minX1 = min(line1Point1.x, line1Point2.x)
-        
-        if maxX2 < minX1 {
-            return false
-        }
+        if maxX2 < minX1 { return false }
         
         let maxY2 = max(line2Point1.y, line2Point2.y)
         let minY1 = min(line1Point1.y, line1Point2.y)
-        
-        if maxY2 < minY1 {
-            return false
-        }
+        if maxY2 < minY1 { return false }
         
         let minX2 = min(line2Point1.x, line2Point2.x)
         let maxX1 = max(line1Point1.x, line1Point2.x)
-        
-        if minX2 > maxX1 {
-            return false
-        }
+        if minX2 > maxX1 { return false }
         
         let minY2 = min(line2Point1.y, line2Point2.y)
         let maxY1 = max(line1Point1.y, line1Point2.y)
-        
-        if minY2 > maxY1 {
-            return false
-        }
-        
-        func between(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Bool {
-            if fabsf(x1 - x2) > epsilon {
-                return (((x1 <= x3) && (x3 <= x2)) || ((x1 >= x3) && (x3 >= x2)))
-            } else {
-                return ((y1 <= y3) && (y3 <= y2)) || ((y1 >= y3) && (y3 >= y2))
-            }
-        }
+        if minY2 > maxY1 { return false }
         
         let area1 = triangleArea(x1: line1Point1.x, y1: line1Point1.y, x2: line1Point2.x, y2: line1Point2.y, x3: line2Point1.x, y3: line2Point1.y)
         if fabsf(area1) < epsilon {
@@ -806,5 +800,67 @@ class DelauneyTriangulator {
     
     func cross(x1: Float, y1: Float, x2: Float, y2: Float) -> Float {
         x1 * y2 - x2 * y1
+    }
+    
+    func populateTriangles(triangulationData: TriangulationData) {
+        for face in triangulationData.faces {
+            let point1 = face.edge.vertex.point
+            let point2 = face.edge.nextEdge.vertex.point
+            let point3 = face.edge.nextEdge.nextEdge.vertex.point
+            let triangle = partsFactory.withdrawTriangle(point1: point1,
+                                                         point2: point2,
+                                                         point3: point3)
+            triangles.append(triangle)
+        }
+    }
+    
+    func removeTrianglesOutsideHull() {
+        
+        if triangulationHullList.count < 3 {
+            return
+        }
+        
+        trianglesTemp.removeAll(keepingCapacity: true)
+        
+        for triangle in triangles {
+            trianglesTemp.append(triangle)
+        }
+        triangles.removeAll(keepingCapacity: true)
+        
+        var index1 = triangulationHullList.count - 1
+        var index2 = 0
+        while index2 < triangulationHullList.count {
+            
+            let point1 = triangulationHullList[index1]
+            let point2 = triangulationHullList[index2]
+            
+            let lineSegment = partsFactory.withdrawLineSegment(point1: point1,
+                                                               point2: point2)
+            
+            lineSegmentList.append(lineSegment)
+            
+            index1 = index2
+            index2 += 1
+        }
+        
+        polyPointBucket.build(lineSegments: lineSegmentList)
+        
+        for triangle in trianglesTemp {
+            
+            let centerX = (triangle.point1.x + triangle.point2.x + triangle.point3.x) / 3.0
+            let centerY = (triangle.point1.y + triangle.point2.y + triangle.point3.y) / 3.0
+            
+            if polyPointBucket.query(x: centerX,
+                                     y: centerY) {
+                triangles.append(triangle)
+            } else {
+                partsFactory.depositTriangle(triangle)
+            }
+        }
+        
+        for lineSegment in lineSegmentList {
+            partsFactory.depositLineSegment(lineSegment)
+        }
+        lineSegmentList.removeAll(keepingCapacity: true)
     }
 }

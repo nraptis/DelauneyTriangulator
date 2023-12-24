@@ -785,9 +785,7 @@ struct Math {
     }
     
     static func triangleArea(point1: Point, point2: Point, point3: Point) -> Float {
-        triangleArea(x1: point1.x, y1: point1.y,
-                     x2: point2.x, y2: point2.y,
-                     x3: point3.x, y3: point3.y)
+        (point2.x - point1.x) * (point3.y - point1.y) - (point3.x - point1.x) * (point2.y - point1.y)
     }
     
     static func triangleArea(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
@@ -795,23 +793,121 @@ struct Math {
     }
     
     static func triangleAreaAbsolute(point1: Point, point2: Point, point3: Point) -> Float {
-        fabsf(triangleArea(x1: point1.x, y1: point1.y,
-                           x2: point2.x, y2: point2.y,
-                           x3: point3.x, y3: point3.y))
+        let area = (point2.x - point1.x) * (point3.y - point1.y) - (point3.x - point1.x) * (point2.y - point1.y)
+        if area < 0.0 {
+            return -area
+        } else {
+            return area
+        }
     }
     
     static func triangleAreaAbsolute(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
-        fabsf(triangleArea(x1: x1, y1: y1,
-                           x2: x2, y2: y2,
-                           x3: x3, y3: y3))
+        let area = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
+        if area < 0.0 {
+            return -area
+        } else {
+            return area
+        }
+    }
+    
+    private static func between(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Bool {
+        if fabsf(x1 - x2) > Math.epsilon {
+            return (((x1 <= x3) && (x3 <= x2)) || ((x1 >= x3) && (x3 >= x2)))
+        } else {
+            return ((y1 <= y3) && (y3 <= y2)) || ((y1 >= y3) && (y3 >= y2))
+        }
+    }
+    
+    
+    static func lineSegmentIntersectsLineSegment(line1Point1X: Float,
+                                                 line1Point1Y: Float,
+                                                 line1Point2X: Float,
+                                                 line1Point2Y: Float,
+                                                 line2Point1X: Float,
+                                                 line2Point1Y: Float,
+                                                 line2Point2X: Float,
+                                                 line2Point2Y: Float) -> Bool {
+
+        let maxX2 = max(line2Point1X, line2Point2X)
+        let minX1 = min(line1Point1X, line1Point2X)
+        
+        if maxX2 < minX1 {
+            return false
+        }
+        
+        let maxY2 = max(line2Point1Y, line2Point2Y)
+        let minY1 = min(line1Point1Y, line1Point2Y)
+        
+        if maxY2 < minY1 {
+            return false
+        }
+        
+        let minX2 = min(line2Point1X, line2Point2X)
+        let maxX1 = max(line1Point1X, line1Point2X)
+        
+        if minX2 > maxX1 {
+            return false
+        }
+        
+        let minY2 = min(line2Point1Y, line2Point2Y)
+        let maxY1 = max(line1Point1Y, line1Point2Y)
+        
+        if minY2 > maxY1 {
+            return false
+        }
+        
+        
+        
+        let area1 = triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y)
+        if fabsf(area1) < Math.epsilon {
+            if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y) {
+                return true
+            } else {
+                if fabsf(triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)) < Math.epsilon {
+                    if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y) {
+                        return true
+                    }
+                    if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y) {
+                        return true
+                    }
+                    return false
+                }
+                return false
+            }
+        }
+        let area2 = triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)
+        if fabsf(area2) <= Math.epsilon {
+            return between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)
+        }
+        let area3 = triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y)
+        if fabsf(area3) <= Math.epsilon {
+            if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y) {
+                return true
+            } else {
+                if fabsf(triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)) < Math.epsilon {
+                    if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y) {
+                        return true
+                    }
+                    if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y) {
+                        return true
+                    }
+                    return false
+                }
+                return false
+            }
+        }
+        let area4 = triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)
+        if fabsf(area4) <= Math.epsilon {
+            return between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)
+        }
+        return ((area1 > 0.0) != (area2 > 0.0)) && ((area3 > 0.0) != (area4 > 0.0))
     }
     
     static func lineSegmentIntersectsLineSegment(line1Point1: Point,
                                                  line1Point2: Point,
                                                  line2Point1: Point,
                                                  line2Point2: Point) -> Bool {
-        
-        /*
+
         let maxX2 = max(line2Point1.x, line2Point2.x)
         let minX1 = min(line1Point1.x, line1Point2.x)
         
@@ -839,41 +935,8 @@ struct Math {
         if minY2 > maxY1 {
             return false
         }
-        */
-        
-        /*
-        var minX1 = min(line1Point1.x, line1Point2.x)
-        var maxX1 = max(line1Point1.x, line1Point2.x)
-        var minY1 = min(line1Point1.y, line1Point2.y)
-        var maxY1 = max(line1Point1.y, line1Point2.y)
-        
-        var minX2 = min(line2Point1.x, line2Point2.x)
-        var maxX2 = max(line2Point1.x, line2Point2.x)
-        var minY2 = min(line2Point1.y, line2Point2.y)
-        var maxY2 = max(line2Point1.y, line2Point2.y)
         
         
-        //m = 1
-        //p = 2
-        // TODO: Rememba Rememba...
-        if Bool.random() {
-            if (((maxX2) <= minX1) || ((maxY2) <= minY1) || (minX2 >= (maxX1)) || (minY2 >= (maxY1))) {
-                
-                return false
-            }
-        }
-        */
-        
-        //return !(((pX + pWidth) <= mX) || ((pY + pHeight) <= mY) || (pX >= (mX + mWidth)) || (pY >= (mY + mHeight)));
-        
-        
-        func between(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Bool {
-            if fabsf(x1 - x2) > Math.epsilon {
-                return (((x1 <= x3) && (x3 <= x2)) || ((x1 >= x3) && (x3 >= x2)))
-            } else {
-                return ((y1 <= y3) && (y3 <= y2)) || ((y1 >= y3) && (y3 >= y2))
-            }
-        }
         
         let area1 = triangleArea(x1: line1Point1.x, y1: line1Point1.y, x2: line1Point2.x, y2: line1Point2.y, x3: line2Point1.x, y3: line2Point1.y)
         if fabsf(area1) < Math.epsilon {

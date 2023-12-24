@@ -79,6 +79,9 @@ class MetalEngine {
         let width = Int(graphics.width * scale + 0.5)
         let height = Int(graphics.height * scale + 0.5)
         
+        print("texture width = \(width)")
+        print("texture height = \(height)")
+        
         storageTexture = createStorageTexture(width: width, height: height)
         antialiasingTexture = createAntialiasingTexture(width: width, height: height)
         depthTexture = createDepthTexture(width: width, height: height)

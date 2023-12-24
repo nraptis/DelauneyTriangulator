@@ -99,6 +99,7 @@ class TriangulationPoint {
     var x: Float
     var y: Float
     unowned var vertex: TriangulationVertex!
+    var isHullPoint = false
     
     init(x: Float, y: Float) {
         self.x = x
@@ -214,5 +215,35 @@ extension TriangulationTriangle: Hashable {
         hasher.combine(point1)
         hasher.combine(point2)
         hasher.combine(point3)
+    }
+}
+
+
+class TriangulationLineSegment {
+    unowned var point1: TriangulationPoint!
+    unowned var point2: TriangulationPoint!
+    var isTagged = false
+    
+    init(point1: TriangulationPoint,
+         point2: TriangulationPoint) {
+        self.point1 = point1
+        self.point2 = point2
+    }
+    
+    func clear() {
+        point1 = nil
+        point2 = nil
+        isTagged = false
+    }
+}
+
+extension TriangulationLineSegment: Hashable {
+    static func == (lhs: TriangulationLineSegment, rhs: TriangulationLineSegment) -> Bool {
+        lhs.point1 === rhs.point1
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(point1)
+        hasher.combine(point2)
     }
 }
