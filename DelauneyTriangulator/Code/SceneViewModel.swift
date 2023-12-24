@@ -36,8 +36,8 @@ import UIKit
     var sceneModel = SceneModel()
     var number = 9
     
-    var polygonPointCountString: String = "24"
-    var innerPointCountString: String = "165"
+    var polygonPointCountString: String = "32"
+    var innerPointCountString: String = "512"
     
     var polygon = [Point]()
     var innerPoints = [Point]()
@@ -51,7 +51,7 @@ import UIKit
         
         var count = count
         if count < 3 { count = 3 }
-        if count > 50 { count = 50 }
+        if count > 100 { count = 100 }
         polygonPointCountString = String(count)
         
         var reloop = true
@@ -67,7 +67,6 @@ import UIKit
                 loops += 1
                 
                 if (loops % 5000) == 0 && loops != 0 {
-                    print("Loops = \(loops)")
                     
                     count -= 4
                     if count < 3 {
@@ -76,6 +75,7 @@ import UIKit
                 }
             }
         }
+        eliminatePointsThatAreOnPolyLines()
     }
     
     private func generateRandomPolygonHelper(width: Float, height: Float, count: Int) -> Bool {
@@ -86,15 +86,15 @@ import UIKit
         
         let closeThreshold = Float(56.0 * 56.0)
         
-        var edgeBuffer = Float(42.0)
+        var edgeBuffer = Float(16.0)
         if UIDevice.current.userInterfaceIdiom == .pad {
-            edgeBuffer = 90.0
+            edgeBuffer = 80.0
         }
         
         let minX = edgeBuffer
-        let maxX = (width - edgeBuffer - edgeBuffer)
+        let maxX = (width - edgeBuffer)
         let minY = edgeBuffer
-        let maxY = (height - edgeBuffer - edgeBuffer)
+        let maxY = (height - edgeBuffer)
         
         let newX = Float.random(in: minX...maxX)
         let newY = Float.random(in: minY...maxY)
@@ -120,12 +120,27 @@ import UIKit
                     hop = Float.random(in: smallestHop...normalHop)
                 }
                 
-                let angle = Float.random(in: 0...(Float.pi * 2.0))
+                var angle = Float.random(in: 0...(Float.pi * 2.0))
+                
+                if Int.random(in: 0...8) == 4 {
+                    // For testing purpose, we want more straight lines...
+                    let dir = Int.random(in: 0...3)
+                    if dir == 0 {
+                        angle = 0.0
+                    } else if dir == 1 {
+                        angle = Float.pi / 2.0
+                    } else if dir == 2 {
+                        angle = Float.pi
+                    } else {
+                        angle = Float.pi * 3.0 / 2.0
+                    }
+                }
+                
                 let dirX = sinf(angle)
                 let dirY = cosf(angle)
                 
-                let newX = lastX + dirX * hop
-                let newY = lastY + dirY * hop
+                let newX = Float(Int(lastX + dirX * hop))
+                let newY = Float(Int(lastY + dirY * hop))
                 
                 if polygon.count > 1 {
                     let lastPoint2 = polygon[polygon.count - 2]
@@ -231,15 +246,15 @@ import UIKit
         
         let closeThreshold = Float(12.0 * 12.0)
         
-        var edgeBuffer = Float(16.0)
+        var edgeBuffer = Float(8.0)
         if UIDevice.current.userInterfaceIdiom == .pad {
-            edgeBuffer = 42.0
+            edgeBuffer = 24.0
         }
         
         let minX = edgeBuffer
-        let maxX = (width - edgeBuffer - edgeBuffer)
+        let maxX = (width - edgeBuffer)
         let minY = edgeBuffer
-        let maxY = (height - edgeBuffer - edgeBuffer)
+        let maxY = (height - edgeBuffer)
         
         while innerPoints.count < count {
             
@@ -247,8 +262,8 @@ import UIKit
             
             while tries < 2048 {
                 
-                let newX = Float.random(in: minX...maxX)
-                let newY = Float.random(in: minY...maxY)
+                let newX = Float(Int(Float.random(in: minX...maxX)))
+                let newY = Float(Int(Float.random(in: minY...maxY)))
                 let newPoint = Point(x: newX,
                                      y: newY)
                 
@@ -282,5 +297,42 @@ import UIKit
                 return
             }
         }
+        eliminatePointsThatAreOnPolyLines()
+    }
+    
+    func eliminatePointsThatAreOnPolyLines() {
+        
+        var keepPoints = [Point]()
+        
+        for point in innerPoints {
+            
+            var index1 = polygon.count - 1
+            var index2 = 0
+            var onLine = false
+            while index2 < polygon.count {
+                let lp1 = polygon[index1]
+                let lp2 = polygon[index2]
+                
+                let closest = Math.segmentClosestPoint(point: point,
+                                                       linePoint1: lp1,
+                                                       linePoint2: lp2)
+                
+                let dist = Math.distanceSquared(point1: closest,
+                                                point2: point)
+                
+                if dist <= (5.0 * 5.0) {
+                    onLine = true
+                }
+                
+                index1 = index2
+                index2 += 1
+            }
+            
+            if !onLine {
+                keepPoints.append(point)
+            }
+            
+        }
+        innerPoints = keepPoints
     }
 }

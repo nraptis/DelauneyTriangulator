@@ -51,7 +51,6 @@ class DelauneyTriangulator {
     func triangulate(points: [SIMD2<Float>],
                      hull: [SIMD2<Float>],
                      superTriangleSize: Float = 8192) {
-        
         for triangulationPoint in triangulationPointList {
             partsFactory.depositPoint(triangulationPoint)
         }

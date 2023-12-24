@@ -253,37 +253,21 @@ class TriangleScene: GraphicsDelegate {
         
         var index = 0
         while index < sceneViewModel.innerPoints.count {
-            
             let point = sceneViewModel.innerPoints[index]
-            
             smallDotBuffer.add(translation: .init(x: point.x, y: point.y),
                                scale: 0.75, rotation: 0.0, red: 0.5, green: 0.25, blue: 1.0, alpha: 0.75)
-            
-            
             index += 1
         }
-        
-        /*
-        smallLineBuffer.add(lineX1: 300.0, lineY1: 220.0, lineX2: 600.0, lineY2: 800.0, lineThickness: 2.0, translation: .zero, scale: 1.0, rotation: 0.0, red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        
-        smallDotBuffer.add(translation: .init(x: 300.0, y: 200.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
-        smallDotBuffer.add(translation: .init(x: 600.0, y: 200.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
-        smallDotBuffer.add(translation: .init(x: 800.0, y: 200.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
-        
-
-        largeDotBuffer.add(translation: .init(x: 300.0, y: 400.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
-        largeDotBuffer.add(translation: .init(x: 600.0, y: 500.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
-        largeDotBuffer.add(translation: .init(x: 800.0, y: 260.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
-        */
         
         triangleBuffer.cullMode = .none
         triangleBuffer.render(renderEncoder: renderEncoder)
         
         smallLineBuffer.render(renderEncoder: renderEncoder)
-        smallDotBuffer.render(renderEncoder: renderEncoder)
+        
         
         largeLineBuffer.render(renderEncoder: renderEncoder)
         largeDotBuffer.render(renderEncoder: renderEncoder)
         
+        smallDotBuffer.render(renderEncoder: renderEncoder)
     }
 }

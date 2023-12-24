@@ -10,7 +10,7 @@ import Foundation
 final class PolyPointBucket {
     
     private class PolyPointBucketNode {
-        var lineSegments = Set<TriangulationLineSegment>()
+        var lineSegments = [TriangulationLineSegment]()
     }
     
     private static let countH = 24
@@ -83,7 +83,7 @@ final class PolyPointBucket {
             
             x = lowerBoundX
             while x <= upperBoundX {
-                nodes[x].lineSegments.insert(lineSegment)
+                nodes[x].lineSegments.append(lineSegment)
                 x += 1
             }
         }
@@ -94,10 +94,8 @@ final class PolyPointBucket {
         let indexX = lowerBoundX(value: x)
         if indexX < Self.countH {
             for lineSegment in nodes[indexX].lineSegments {
-                
                 let point1 = lineSegment.point1!
                 let point2 = lineSegment.point2!
-                
                 let x1: Float
                 let y1: Float
                 let x2: Float
@@ -113,9 +111,8 @@ final class PolyPointBucket {
                     x2 = point1.x
                     y2 = point1.y
                 }
-                
-                if x >= x1 && x <= x2 {
-                    if (x - x1) * (y2 - y1) - (y - y1) * (x2 - x1) <= 0.0 {
+                if x > x1 && x <= x2 {
+                    if (x - x1) * (y2 - y1) - (y - y1) * (x2 - x1) < 0.0 {
                         result = !result
                     }
                 }

@@ -16,8 +16,8 @@ struct TriangleSceneView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<TriangleSceneView>) -> MetalViewController {
         
-        //let width = Float(Int(width + 0.5))
-        //let height = Float(Int(height + 0.5))
+        let width = Float(Int(width + 0.5))
+        let height = Float(Int(height + 0.5))
         
         let scene = TriangleScene(width: Float(width),
                                   height: Float(height))
@@ -25,7 +25,6 @@ struct TriangleSceneView: UIViewControllerRepresentable {
         
         sceneViewModel.width = Float(width)
         sceneViewModel.height = Float(height)
-        
         
         let metalViewController = MetalViewController(delegate: scene,
                                                       width: Float(width),

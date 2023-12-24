@@ -9,31 +9,12 @@ import Foundation
 
 class DelauneyTriangulatorPartsFactory {
     
-    
-    let DEBUG = false
-    
     ////////////////
     ///
     ///
     private var triangulationPoints = [TriangulationPoint]()
-    var _maxTriangulationPointCount = 0
-    func depositPoint(_ triangulationPoint: TriangulationPoint) {
-        if DEBUG {
-            for check in triangulationPoints {
-                if check === triangulationPoint {
-                    print("already exists, double deposit triangulationPoint")
-                }
-            }
-        }
-        
-        triangulationPoints.append(triangulationPoint)
-        
-        if DEBUG {
-            if triangulationPoints.count > _maxTriangulationPointCount {
-                _maxTriangulationPointCount = triangulationPoints.count
-                print("new max triangulation points: \(_maxTriangulationPointCount)")
-            }
-        }
+    func depositPoint(_ point: TriangulationPoint) {
+        triangulationPoints.append(point)
     }
     func withdrawPoint(x: Float, y: Float) -> TriangulationPoint {
         if triangulationPoints.count > 0 {
@@ -53,25 +34,9 @@ class DelauneyTriangulatorPartsFactory {
     ///
     ///
     private var triangulationVertices = [TriangulationVertex]()
-    var _maxTriangulationVertexCount = 0
-    func depositVertex(_ triangulationVertex: TriangulationVertex) {
-        if DEBUG {
-            for check in triangulationVertices {
-                if check === triangulationVertex {
-                    print("already exists, double deposit triangulationVertex")
-                }
-            }
-        }
-        
-        triangulationVertex.clear()
-        triangulationVertices.append(triangulationVertex)
-        
-        if DEBUG {
-            if triangulationVertices.count > _maxTriangulationVertexCount {
-                _maxTriangulationVertexCount = triangulationVertices.count
-                print("new max triangulation vertices: \(_maxTriangulationVertexCount)")
-            }
-        }
+    func depositVertex(_ vertex: TriangulationVertex) {
+        vertex.clear()
+        triangulationVertices.append(vertex)
     }
     func withdrawVertex(point: TriangulationPoint) -> TriangulationVertex {
         if triangulationVertices.count > 0 {
@@ -92,25 +57,9 @@ class DelauneyTriangulatorPartsFactory {
     ///
     ///
     private var triangulationEdges = [TriangulationEdge]()
-    var _maxTriangulationEdgeCount = 0
-    func depositEdge(_ triangulationEdge: TriangulationEdge) {
-        if DEBUG {
-            for check in triangulationEdges {
-                if check === triangulationEdge {
-                    print("already exists, double deposit triangulationEdge")
-                }
-            }
-        }
-        
-        triangulationEdge.clear()
-        triangulationEdges.append(triangulationEdge)
-        
-        if DEBUG {
-            if triangulationEdges.count > _maxTriangulationEdgeCount {
-                _maxTriangulationEdgeCount = triangulationEdges.count
-                print("new max triangulation Edges: \(_maxTriangulationEdgeCount)")
-            }
-        }
+    func depositEdge(_ edge: TriangulationEdge) {
+        edge.clear()
+        triangulationEdges.append(edge)
     }
     func withdrawEdge(vertex: TriangulationVertex) -> TriangulationEdge {
         if triangulationEdges.count > 0 {
@@ -130,24 +79,8 @@ class DelauneyTriangulatorPartsFactory {
     ///
     ///
     private var triangulationFaces = [TriangulationFace]()
-    var _maxTriangulationFaceCount = 0
-    func depositFace(_ triangulationFace: TriangulationFace) {
-        if DEBUG {
-            for check in triangulationFaces {
-                if check === triangulationFace {
-                    print("already exists, double deposit triangulationFace")
-                }
-            }
-        }
-        
-        triangulationFaces.append(triangulationFace)
-        
-        if DEBUG {
-            if triangulationFaces.count > _maxTriangulationFaceCount {
-                _maxTriangulationFaceCount = triangulationFaces.count
-                print("new max triangulation faces: \(_maxTriangulationFaceCount)")
-            }
-        }
+    func depositFace(_ face: TriangulationFace) {
+        triangulationFaces.append(face)
     }
     func withdrawFace(edge: TriangulationEdge) -> TriangulationFace {
         if triangulationFaces.count > 0 {
@@ -167,24 +100,8 @@ class DelauneyTriangulatorPartsFactory {
         ///
         ///
     private var triangulationTriangles = [TriangulationTriangle]()
-    var _maxTriangulationTriangleCount = 0
-    func depositTriangle(_ triangulationTriangle: TriangulationTriangle) {
-        if DEBUG {
-            for check in triangulationTriangles {
-                if check === triangulationTriangle {
-                    print("already exists, double deposit TriangulationTriangle")
-                }
-            }
-        }
-        
-        triangulationTriangles.append(triangulationTriangle)
-        
-        if DEBUG {
-            if triangulationTriangles.count > _maxTriangulationTriangleCount {
-                _maxTriangulationTriangleCount = triangulationTriangles.count
-                print("new max triangulation triangles: \(_maxTriangulationTriangleCount)")
-            }
-        }
+    func depositTriangle(_ triangle: TriangulationTriangle) {
+        triangulationTriangles.append(triangle)
     }
     func withdrawTriangle(point1: TriangulationPoint,
                           point2: TriangulationPoint,
@@ -210,25 +127,9 @@ class DelauneyTriangulatorPartsFactory {
     ///
     ///
     private var triangulationLineSegments = [TriangulationLineSegment]()
-    var _maxTriangulationLineSegmentCount = 0
-    func depositLineSegment(_ triangulationLineSegment: TriangulationLineSegment) {
-        if DEBUG {
-            for check in triangulationLineSegments {
-                if check === triangulationLineSegment {
-                    print("already exists, double deposit triangulationLineSegment")
-                }
-            }
-        }
-        
-        triangulationLineSegments.append(triangulationLineSegment)
-        triangulationLineSegment.clear()
-        
-        if DEBUG {
-            if triangulationLineSegments.count > _maxTriangulationLineSegmentCount {
-                _maxTriangulationLineSegmentCount = triangulationLineSegments.count
-                print("new max triangulation line segments: \(_maxTriangulationLineSegmentCount)")
-            }
-        }
+    func depositLineSegment(_ lineSegment: TriangulationLineSegment) {
+        triangulationLineSegments.append(lineSegment)
+        lineSegment.clear()
     }
     func withdrawLineSegment(point1: TriangulationPoint,
                              point2: TriangulationPoint) -> TriangulationLineSegment {
