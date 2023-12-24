@@ -9,8 +9,7 @@ I started my triangulation journey over 15 years ago. Now that 15 years have pas
 
 Please note that the Constrained triangulation is technically no longer a "Delauney triangulation," as it is not a convex hull.</br></br>
 
-Example of using Constrained Delauney with "hull" as the outer polygon:</br></br>
-</br></br>
+Example of using Constrained Delauney with "hull" as the outer polygon:</br>
 
 ```
 let hull = [
@@ -45,9 +44,7 @@ while triangleIndex < triangulator.triangles.count {
 }
 ```
 
-Example of using Standard Delauney:</br></br>
-</br></br>
-
+Example of using Standard Delauney:</br>
 ```
 let points = [
     SIMD2<Float>(-100.0, -100.0),
