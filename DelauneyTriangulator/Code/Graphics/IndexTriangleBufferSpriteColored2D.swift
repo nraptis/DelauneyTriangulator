@@ -275,9 +275,7 @@ class IndexTriangleBufferSpriteColored2D {
         add(vertex: VertexSpriteColored2D.init(x: _cornerX[3], y: _cornerY[3],
                                                u: sprite.endU, v: sprite.endV,
                                                r: red, g: green, b: blue, a: alpha))
-        
     }
-    
     
     func add(cornerX1: Float, cornerY1: Float,
              cornerX2: Float, cornerY2: Float,
@@ -517,7 +515,6 @@ class IndexTriangleBufferSpriteColored2D {
         graphics.set(samplerState: samplerState, renderEncoder: renderEncoder)
         
         renderEncoder.setCullMode(cullMode)
-        
         renderEncoder.drawIndexedPrimitives(type: primitiveType,
                                             indexCount: indicesCount,
                                             indexType: .uint16,

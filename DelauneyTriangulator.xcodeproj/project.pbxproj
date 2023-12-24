@@ -19,7 +19,6 @@
 		E82B5E1C2B37775700CFED63 /* EdgeGridBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E022B37775700CFED63 /* EdgeGridBucket.swift */; };
 		E82B5E1D2B37775700CFED63 /* DelauneyTriangulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E032B37775700CFED63 /* DelauneyTriangulator.swift */; };
 		E82B5E1E2B37775700CFED63 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E052B37775700CFED63 /* Math.swift */; };
-		E82B5E1F2B37775700CFED63 /* BatchDrawerSpriteColored2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E062B37775700CFED63 /* BatchDrawerSpriteColored2D.swift */; };
 		E82B5E212B37775700CFED63 /* Sprite2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E082B37775700CFED63 /* Sprite2D.swift */; };
 		E82B5E222B37775700CFED63 /* SpriteInstance2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E092B37775700CFED63 /* SpriteInstance2D.swift */; };
 		E82B5E232B37775700CFED63 /* IndexTriangleBufferSpriteColored2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E0A2B37775700CFED63 /* IndexTriangleBufferSpriteColored2D.swift */; };
@@ -106,7 +105,6 @@
 		E82B5E022B37775700CFED63 /* EdgeGridBucket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeGridBucket.swift; sourceTree = "<group>"; };
 		E82B5E032B37775700CFED63 /* DelauneyTriangulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulator.swift; sourceTree = "<group>"; };
 		E82B5E052B37775700CFED63 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
-		E82B5E062B37775700CFED63 /* BatchDrawerSpriteColored2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchDrawerSpriteColored2D.swift; sourceTree = "<group>"; };
 		E82B5E082B37775700CFED63 /* Sprite2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sprite2D.swift; sourceTree = "<group>"; };
 		E82B5E092B37775700CFED63 /* SpriteInstance2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpriteInstance2D.swift; sourceTree = "<group>"; };
 		E82B5E0A2B37775700CFED63 /* IndexTriangleBufferSpriteColored2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexTriangleBufferSpriteColored2D.swift; sourceTree = "<group>"; };
@@ -271,7 +269,6 @@
 			isa = PBXGroup;
 			children = (
 				E869312F2B377D680067A51E /* Shaders */,
-				E82B5E062B37775700CFED63 /* BatchDrawerSpriteColored2D.swift */,
 				E82B5E0A2B37775700CFED63 /* IndexTriangleBufferSpriteColored2D.swift */,
 				E82B5E0D2B37775700CFED63 /* Graphics.swift */,
 				E82B5E052B37775700CFED63 /* Math.swift */,
@@ -518,7 +515,6 @@
 				E82B5E262B37775700CFED63 /* Graphics.swift in Sources */,
 				E86931A52B37DB610067A51E /* PolyPointBucket.swift in Sources */,
 				E82B5E1D2B37775700CFED63 /* DelauneyTriangulator.swift in Sources */,
-				E82B5E1F2B37775700CFED63 /* BatchDrawerSpriteColored2D.swift in Sources */,
 				E86931342B377D680067A51E /* Shape.metal in Sources */,
 				E86931372B377D680067A51E /* Sprite.metal in Sources */,
 				E82B5E242B37775700CFED63 /* Matrix.swift in Sources */,
