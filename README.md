@@ -1,35 +1,26 @@
-# Manual-Spline
-Cubic Spline where tangents are either manually or automatically computed.</br></br>
+# Delauney-Triangulation
+Delauney Triangulation in Swift. Also includes constraints from the Sloan technique.</br></br>
 
-Created from math that I scribbled down on the inside of my trapper keeper in 6th grade. It was not until age 19 that I turned it into a functioning computer program. 20 years and 15 iterations later, all the kinks are worked out.</br></br>
+I started my triangulation journey over 15 years ago. Now that 15 years have passed, I finally have an upgrade to share. This is a very fast and accurate triangulation system. It will always work if it's used correctly.</br></br>
 
-![alt text](https://raw.githubusercontent.com/nraptis/Manual-Spline/main/spline_manual.png?raw=true)</br></br>
+![alt text](https://github.com/nraptis/DelauneyTriangulator/blob/main/delauney.png)</br></br>
 
 ```
-let spline = ManualSpline()
+let hull = [
+    SIMD2<Float>(-100.0, -100.0),
+    SIMD2<Float>(100.0, -100.0),
+    SIMD2<Float>(0.0, 100.0)
+]
 
-spline.addControlPoint(100.0, 200.0)
-spline.addControlPoint(150.0, 300.0)
-spline.addControlPoint(80.0, 420.0)
+let points = [
+    SIMD2<Float>(-25.0, -10.0),
+    SIMD2<Float>(50.0, 10.0)
+]
 
-// use a manual tangent at index 1. (150.0, 300.0)
-spline.enableManualControlTan(at: 1,
-                              inTanX: -10.0, inTanY: 20.0,
-                              outTanX: 10.0, outTanY: -20.0)
+DelauneyTriangulator.shared.delauneyConstrainedTriangulation(points: points,
+                                                             hull: hull)
 
-// "closed = true" will connect the last
-// point to the first point smoothly
-spline.solve(closed: true)
-
-// walk through the spline
-var pos = Float(0.0)
-while pos <= spline.maxPos {
-    
-    let smoothX = spline.getX(pos)
-    let smoothY = spline.getY(pos)
-    
-    print("spline pos @ \(String(format: "%.1f", pos)) = {\(String(format: "%.1f", smoothX)), \(String(format: "%.1f", smoothY))}")
-    
-    pos += 0.1
+for triangle in DelauneyTriangulator.shared.triangles {
+    print("Triangle: [(\(triangle.point1.x), \(triangle.point1.y)), (\(triangle.point2.x), \(triangle.point2.y)), (\(triangle.point3.x), \(triangle.point3.y))]")
 }
 ```
