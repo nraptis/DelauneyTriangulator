@@ -90,46 +90,38 @@ final class PolyPointBucket {
     }
     
     func query(x: Float, y: Float) -> Bool {
-        
         var result = false
-        
-        if x >= gridX[0] && x <= gridX[Self.countH - 1] {
-            let indexX = lowerBoundX(value: x)
-            
+        let indexX = lowerBoundX(value: x)
+        if indexX < Self.countH {
             for lineSegment in nodes[indexX].lineSegments {
                 
                 let point1 = lineSegment.point1!
                 let point2 = lineSegment.point2!
                 
-                if rangesContainsValue(start: point1.x, end: point2.x, value: x) {
-                    
-                    if point1.y <= y || point2.y <= y {
-                            if lineSegmentIntersectsLineSegment(line1Point1X: x,
-                                                                     line1Point1Y: y,
-                                                                     line1Point2X: x,
-                                                                     line1Point2Y: y - 2048.0,
-                                                                     line2Point1X: point1.x,
-                                                                     line2Point1Y: point1.y,
-                                                                     line2Point2X: point2.x,
-                                                                     line2Point2Y: point2.y) {
-                            result = !result
-                        }
+                let x1: Float
+                let y1: Float
+                let x2: Float
+                let y2: Float
+                if point1.x < point2.x {
+                    x1 = point1.x
+                    y1 = point1.y
+                    x2 = point2.x
+                    y2 = point2.y
+                } else {
+                    x1 = point2.x
+                    y1 = point2.y
+                    x2 = point1.x
+                    y2 = point1.y
+                }
+                
+                if x >= x1 && x <= x2 {
+                    if (x - x1) * (y2 - y1) - (y - y1) * (x2 - x1) <= 0.0 {
+                        result = !result
                     }
                 }
             }
         }
-        
         return result
-    }
-    
-    func rangesContainsValue(start: Float, end: Float, value: Float) -> Bool {
-        if value >= start && value <= end {
-            return true
-        }
-        if value >= end && value <= start {
-            return true
-        }
-        return false
     }
     
     func lowerBoundX(value: Float) -> Int {
@@ -159,81 +151,4 @@ final class PolyPointBucket {
         }
         return start
     }
-    
-    func triangleArea(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
-        (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
-    }
-    
-    func triangleAreaAbsolute(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
-        let area = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
-        if area < 0.0 {
-            return -area
-        } else {
-            return area
-        }
-    }
-    
-    func between(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Bool {
-        if fabsf(x1 - x2) > epsilon {
-            return (((x1 <= x3) && (x3 <= x2)) || ((x1 >= x3) && (x3 >= x2)))
-        } else {
-            return ((y1 <= y3) && (y3 <= y2)) || ((y1 >= y3) && (y3 >= y2))
-        }
-    }
-    
-    private let epsilon = Float(0.00001)
-    func lineSegmentIntersectsLineSegment(line1Point1X: Float,
-                                          line1Point1Y: Float,
-                                          line1Point2X: Float,
-                                          line1Point2Y: Float,
-                                          line2Point1X: Float,
-                                          line2Point1Y: Float,
-                                          line2Point2X: Float,
-                                          line2Point2Y: Float) -> Bool {
-        
-        let area1 = triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y)
-        if fabsf(area1) < epsilon {
-            if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y) {
-                return true
-            } else {
-                if fabsf(triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)) < epsilon {
-                    if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y) {
-                        return true
-                    }
-                    if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y) {
-                        return true
-                    }
-                    return false
-                }
-                return false
-            }
-        }
-        let area2 = triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)
-        if fabsf(area2) <= epsilon {
-            return between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)
-        }
-        let area3 = triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y)
-        if fabsf(area3) <= epsilon {
-            if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y) {
-                return true
-            } else {
-                if fabsf(triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)) < epsilon {
-                    if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y) {
-                        return true
-                    }
-                    if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y) {
-                        return true
-                    }
-                    return false
-                }
-                return false
-            }
-        }
-        let area4 = triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)
-        if fabsf(area4) <= epsilon {
-            return between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)
-        }
-        return ((area1 > 0.0) != (area2 > 0.0)) && ((area3 > 0.0) != (area4 > 0.0))
-    }
-    
 }

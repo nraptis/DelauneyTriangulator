@@ -26,6 +26,11 @@ class TriangleScene: GraphicsDelegate {
     unowned var sceneViewModel: SceneViewModel!
     unowned var graphics: Graphics!
     
+    let width: Float
+    let height: Float
+    let width2: Float
+    let height2: Float
+    
     let triangleBuffer = IndexTriangleBufferSpriteColored2D()
     
     let smallLineBuffer = IndexTriangleBufferSpriteColored2D()
@@ -34,13 +39,6 @@ class TriangleScene: GraphicsDelegate {
     let smallDotBuffer = IndexTriangleBufferSpriteColored2D()
     let largeDotBuffer = IndexTriangleBufferSpriteColored2D()
     
-    
-    
-    let width: Float
-    let height: Float
-    let width2: Float
-    let height2: Float
-    
     let whiteSquareSprite = Sprite2D()
     
     let smallDotSprite = Sprite2D()
@@ -48,7 +46,6 @@ class TriangleScene: GraphicsDelegate {
     
     let smallLineSprite = Sprite2D()
     let largeLineSprite = Sprite2D()
-    
     
     init(width: Float, height: Float) {
 
@@ -79,7 +76,6 @@ class TriangleScene: GraphicsDelegate {
         smallLineSprite.loadScaled(graphics: graphics, name: "jiggle_tan_line", extension: "png")
         largeLineSprite.loadScaled(graphics: graphics, name: "jiggle_poly_line", extension: "png")
         
-        
         triangleBuffer.load(graphics: graphics, sprite: whiteSquareSprite)
         triangleBuffer.blendMode = .alpha
         
@@ -89,35 +85,22 @@ class TriangleScene: GraphicsDelegate {
         largeLineBuffer.load(graphics: graphics, sprite: largeLineSprite)
         largeLineBuffer.blendMode = .whitePremultiplied
         
-        
-        
         smallDotBuffer.load(graphics: graphics, sprite: smallDotSprite)
         smallDotBuffer.blendMode = .whitePremultiplied
         
         largeDotBuffer.load(graphics: graphics, sprite: largeDotSprite)
         largeDotBuffer.blendMode = .whitePremultiplied
-        
-        //let largeLineBuffer = IndexTriangleBufferSpriteColored2D()
-        
-        //let smallDotBuffer = IndexTriangleBufferSpriteColored2D()
-        //let largeDotBuffer = IndexTriangleBufferSpriteColored2D()
-        
     }
     
     func loadComplete() {
-        
-        //jiggleEngine.loadComplete()
         
     }
     
     func update(deltaTime: Float) {
         
-        
-        
     }
     
     func draw3D(renderEncoder: MTLRenderCommandEncoder) {
-        //jiggleEngine.draw3D(renderEncoder: renderEncoder)
         
     }
     
@@ -148,12 +131,6 @@ class TriangleScene: GraphicsDelegate {
         largeDotBuffer.projectionMatrix = projection
         largeDotBuffer.modelViewMatrix = matrix_identity_float4x4
         
-
-        
-        
-        
-        
-        
         switch sceneViewModel.triangulationMode {
             
         case .delauney:
@@ -168,7 +145,7 @@ class TriangleScene: GraphicsDelegate {
                 innerPoints.append(.init(point.x, point.y))
             }
             
-            DelauneyTriangulator.shared.delauneyTriangulation(points: innerPoints)
+            DelauneyTriangulator.shared.triangulate(points: innerPoints)
             
             break
         case .constrainedDelauney:
@@ -184,7 +161,7 @@ class TriangleScene: GraphicsDelegate {
                 innerPoints.append(.init(point.x, point.y))
             }
             
-            DelauneyTriangulator.shared.delauneyConstrainedTriangulation(points: innerPoints,
+            DelauneyTriangulator.shared.triangulate(points: innerPoints,
                                                                          hull: hullPoints)
             
             break

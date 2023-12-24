@@ -15,8 +15,6 @@ class DelauneyTriangulator {
     private let triangulationData: TriangulationData
     private(set) var triangles: [TriangulationTriangle]
     
-    
-    
     private let partsFactory: DelauneyTriangulatorPartsFactory
     
     private var trianglesTemp: [TriangulationTriangle]
@@ -43,15 +41,16 @@ class DelauneyTriangulator {
         triangulationPointList = [TriangulationPoint]()
         triangulationHullList = [TriangulationPoint]()
         lineSegmentList = [TriangulationLineSegment]()
-        epsilon = 0.00001
         
         edgeGridBucket = EdgeGridBucket()
         polyPointBucket = PolyPointBucket()
+        
+        epsilon = 0.00001
     }
     
-    func delauneyConstrainedTriangulation(points: [SIMD2<Float>],
-                                          hull: [SIMD2<Float>],
-                                          superTriangleSize: Float = 8192) {
+    func triangulate(points: [SIMD2<Float>],
+                     hull: [SIMD2<Float>],
+                     superTriangleSize: Float = 8192) {
         
         for triangulationPoint in triangulationPointList {
             partsFactory.depositPoint(triangulationPoint)
@@ -74,8 +73,8 @@ class DelauneyTriangulator {
             triangulationPointList.append(triangulationPoint)
         }
         
-        if delauneyConstrainedTriangulation(triangulationData: triangulationData,
-                                            superTriangleSize: superTriangleSize) {
+        if triangulateConstrained(triangulationData: triangulationData,
+                                  superTriangleSize: superTriangleSize) {
             populateTriangles(triangulationData: triangulationData)
             removeTrianglesOutsideHull()
             
@@ -84,8 +83,8 @@ class DelauneyTriangulator {
         }
     }
     
-    func delauneyTriangulation(points: [SIMD2<Float>],
-                               superTriangleSize: Float = 8192) {
+    func triangulate(points: [SIMD2<Float>],
+                     superTriangleSize: Float = 8192) {
         
         for triangulationPoint in triangulationPointList {
             partsFactory.depositPoint(triangulationPoint)
@@ -99,17 +98,17 @@ class DelauneyTriangulator {
             triangulationPointList.append(triangulationPoint)
         }
         
-        if delauneyTriangulation(triangulationData: triangulationData,
-                                 superTriangleSize: superTriangleSize) {
+        if triangulateBase(triangulationData: triangulationData,
+                           superTriangleSize: superTriangleSize) {
             populateTriangles(triangulationData: triangulationData)
         } else {
             reset()
         }
     }
     
-    private func delauneyConstrainedTriangulation(triangulationData: TriangulationData,
+    private func triangulateConstrained(triangulationData: TriangulationData,
                                                   superTriangleSize: Float = 8192) -> Bool {
-        if delauneyTriangulation(triangulationData: triangulationData,
+        if triangulateBase(triangulationData: triangulationData,
                                  superTriangleSize: superTriangleSize) {
             if constrainWithHull(triangleData: triangulationData) {
                 return true
@@ -118,7 +117,7 @@ class DelauneyTriangulator {
         return false
     }
     
-    private func delauneyTriangulation(triangulationData: TriangulationData,
+    private func triangulateBase(triangulationData: TriangulationData,
                                        superTriangleSize: Float = 8192) -> Bool {
         
         reset()

@@ -25,6 +25,7 @@
 		E82B5E242B37775700CFED63 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E0B2B37775700CFED63 /* Matrix.swift */; };
 		E82B5E252B37775700CFED63 /* Quaternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E0C2B37775700CFED63 /* Quaternion.swift */; };
 		E82B5E262B37775700CFED63 /* Graphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E0D2B37775700CFED63 /* Graphics.swift */; };
+		E84357712B38934600C473E5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E84357702B38934600C473E5 /* README.md */; };
 		E86931222B3778B30067A51E /* TopMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931212B3778B30067A51E /* TopMenu.swift */; };
 		E86931242B3779310067A51E /* TriangleSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931232B3779310067A51E /* TriangleSceneView.swift */; };
 		E86931262B3779670067A51E /* TriangleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931252B3779670067A51E /* TriangleScene.swift */; };
@@ -111,6 +112,7 @@
 		E82B5E0B2B37775700CFED63 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		E82B5E0C2B37775700CFED63 /* Quaternion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quaternion.swift; sourceTree = "<group>"; };
 		E82B5E0D2B37775700CFED63 /* Graphics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graphics.swift; sourceTree = "<group>"; };
+		E84357702B38934600C473E5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		E86931212B3778B30067A51E /* TopMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenu.swift; sourceTree = "<group>"; };
 		E86931232B3779310067A51E /* TriangleSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangleSceneView.swift; sourceTree = "<group>"; };
 		E86931252B3779670067A51E /* TriangleScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangleScene.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 		E82B5A3D2B37744200CFED63 /* DelauneyTriangulator */ = {
 			isa = PBXGroup;
 			children = (
+				E84357702B38934600C473E5 /* README.md */,
 				E86931382B3780080067A51E /* Assets */,
 				E82B5DF12B37775700CFED63 /* Code */,
 				E82B5A422B37744300CFED63 /* Assets.xcassets */,
@@ -226,8 +229,8 @@
 		E82B5DF12B37775700CFED63 /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				E82B5DFE2B37775700CFED63 /* [Delauney] */,
 				E82B5DF22B37775700CFED63 /* DelauneyTriangulatorApp.swift */,
+				E82B5DFE2B37775700CFED63 /* [Delauney] */,
 				E82B5DF32B37775700CFED63 /* Metal */,
 				E82B5E042B37775700CFED63 /* Graphics */,
 				E86931212B3778B30067A51E /* TopMenu.swift */,
@@ -461,6 +464,7 @@
 				E869317B2B3780090067A51E /* jiggle_tan_point_small_stroke_6_0.png in Resources */,
 				E86931702B3780090067A51E /* jiggle_tan_point_small_1_0.png in Resources */,
 				E86931852B3780090067A51E /* jiggle_poly_line_stroke_3_0.png in Resources */,
+				E84357712B38934600C473E5 /* README.md in Resources */,
 				E86931792B3780090067A51E /* jiggle_tan_point_large_1_5.png in Resources */,
 				E869316F2B3780090067A51E /* jiggle_tan_point_large_stroke_1_0.png in Resources */,
 				E869317D2B3780090067A51E /* jiggle_tan_point_large_1_0.png in Resources */,

@@ -218,11 +218,9 @@ extension TriangulationTriangle: Hashable {
     }
 }
 
-
 class TriangulationLineSegment {
     unowned var point1: TriangulationPoint!
     unowned var point2: TriangulationPoint!
-    var isTagged = false
     
     init(point1: TriangulationPoint,
          point2: TriangulationPoint) {
@@ -233,7 +231,6 @@ class TriangulationLineSegment {
     func clear() {
         point1 = nil
         point2 = nil
-        isTagged = false
     }
 }
 
