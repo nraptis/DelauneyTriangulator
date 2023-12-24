@@ -36,8 +36,8 @@ import UIKit
     var sceneModel = SceneModel()
     var number = 9
     
-    var polygonPointCountString: String = "32"
-    var innerPointCountString: String = "512"
+    var polygonPointCountString: String = "64"
+    var innerPointCountString: String = "1024"
     
     var polygon = [Point]()
     var innerPoints = [Point]()
@@ -120,27 +120,13 @@ import UIKit
                     hop = Float.random(in: smallestHop...normalHop)
                 }
                 
-                var angle = Float.random(in: 0...(Float.pi * 2.0))
-                
-                if Int.random(in: 0...8) == 4 {
-                    // For testing purpose, we want more straight lines...
-                    let dir = Int.random(in: 0...3)
-                    if dir == 0 {
-                        angle = 0.0
-                    } else if dir == 1 {
-                        angle = Float.pi / 2.0
-                    } else if dir == 2 {
-                        angle = Float.pi
-                    } else {
-                        angle = Float.pi * 3.0 / 2.0
-                    }
-                }
+                let angle = Float.random(in: 0...(Float.pi * 2.0))
                 
                 let dirX = sinf(angle)
                 let dirY = cosf(angle)
                 
-                let newX = Float(Int(lastX + dirX * hop))
-                let newY = Float(Int(lastY + dirY * hop))
+                let newX = lastX + dirX * hop
+                let newY = lastY + dirY * hop
                 
                 if polygon.count > 1 {
                     let lastPoint2 = polygon[polygon.count - 2]
@@ -262,8 +248,8 @@ import UIKit
             
             while tries < 2048 {
                 
-                let newX = Float(Int(Float.random(in: minX...maxX)))
-                let newY = Float(Int(Float.random(in: minY...maxY)))
+                let newX = Float.random(in: minX...maxX)
+                let newY = Float.random(in: minY...maxY)
                 let newPoint = Point(x: newX,
                                      y: newY)
                 

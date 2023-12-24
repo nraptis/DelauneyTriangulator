@@ -27,33 +27,6 @@ struct ContainerView: View {
                     sceneViewModel.generateRandomPoints(width: Float(geometry.size.width),
                                                         height: Float(geometry.size.height),
                                                         count: innerPointCount)
-                    
-                    /*
-                    var safety = 0
-                    while safety < 1_000_000 {
-                        
-                        if (safety % 100) == 0 {
-                            print("Safety: \(safety)")
-                        }
-                        
-                        sceneViewModel.generateRandomPolygon(width: Float(geometry.size.width),
-                                                             height: Float(geometry.size.height),
-                                                             count: polygonCount)
-                        sceneViewModel.generateRandomPoints(width: Float(geometry.size.width),
-                                                            height: Float(geometry.size.height),
-                                                            count: innerPointCount)
-                        
-                        DelauneyTriangulator.shared.triangulate(points: sceneViewModel.innerPoints.map { .init($0.x, $0.y) },
-                                                                
-                                                                hull: sceneViewModel.polygon.map { .init($0.x, $0.y) })
-                        if DelauneyTriangulator.shared.triangles.count == 0 {
-                            break
-                        } else {
-                            safety += 1
-                        }
-                        
-                    }
-                    */
                 }
             }
             .ignoresSafeArea(.keyboard)
