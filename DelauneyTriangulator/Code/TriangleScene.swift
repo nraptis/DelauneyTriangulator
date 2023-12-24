@@ -9,6 +9,18 @@ import Metal
 import UIKit
 import simd
 
+struct DrawEdge: Hashable {
+    var point1: TriangulationPoint
+    var point2: TriangulationPoint
+    
+    init(point1: TriangulationPoint, point2: TriangulationPoint) {
+        
+        self.point1 = point1
+        self.point2 = point2
+    }
+}
+
+
 class TriangleScene: GraphicsDelegate {
     
     unowned var sceneViewModel: SceneViewModel!
@@ -136,23 +148,113 @@ class TriangleScene: GraphicsDelegate {
         largeDotBuffer.projectionMatrix = projection
         largeDotBuffer.modelViewMatrix = matrix_identity_float4x4
         
-        let point1 = Math.Point(x: 100.0, y: 100.0)
-        let point2 = Math.Point(x: 200.0, y: 120.0)
-        let point3 = Math.Point(x: 150.0, y: 300.0)
+
         
-        triangleBuffer.add(cornerX1: point1.x, cornerY1: point1.y,
-                           cornerX2: point2.x, cornerY2: point2.y,
-                           cornerX3: point3.x, cornerY3: point3.y,
-                           translation: .zero, scale: 1.0, rotation: 0.0,
-                           red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        var hullPoints = [TriangulationPoint]()
+        var innerPoints = [TriangulationPoint]()
+        
+        for point in sceneViewModel.polygon {
+            hullPoints.append(DelauneyTriangulator.shared.partsFactory.withdrawPoint(x: point.x,
+                                                                                     y: point.y))
+        }
+        
+        switch sceneViewModel.triangulationMode {
+            
+        case .delauney:
+            
+            DelauneyTriangulator.shared.delauneyTriangulation(points: hullPoints)
+            
+            break
+        case .constrainedDelauney:
+            break
+            
+        }
+        
+        var drawnEdges = Set<DrawEdge>()
+        for triangle in DelauneyTriangulator.shared.triangles {
+            
+            triangleBuffer.add(cornerX1: triangle.point1.x, cornerY1: triangle.point1.y,
+                               cornerX2: triangle.point2.x, cornerY2: triangle.point2.y,
+                               cornerX3: triangle.point3.x, cornerY3: triangle.point3.y,
+                               translation: .zero, scale: 1.0, rotation: 0.0,
+                               red: 0.5, green: 0.85, blue: 0.25, alpha: 0.5)
+        }
+        
+        for triangle in DelauneyTriangulator.shared.triangles {
+            let drawEdge1A = DrawEdge(point1: triangle.point1, point2: triangle.point2)
+            let drawEdge1B = DrawEdge(point1: triangle.point2, point2: triangle.point1)
+            
+            let drawEdge2A = DrawEdge(point1: triangle.point2, point2: triangle.point3)
+            let drawEdge2B = DrawEdge(point1: triangle.point3, point2: triangle.point2)
+            
+            let drawEdge3A = DrawEdge(point1: triangle.point3, point2: triangle.point1)
+            let drawEdge3B = DrawEdge(point1: triangle.point1, point2: triangle.point3)
+            
+            if !(drawnEdges.contains(drawEdge1A) || drawnEdges.contains(drawEdge1B)) {
+                drawnEdges.insert(drawEdge1A)
+                smallLineBuffer.add(lineX1: triangle.point1.x, lineY1: triangle.point1.y,
+                                    lineX2: triangle.point2.x, lineY2: triangle.point2.y,
+                                    lineThickness: smallLineSprite.width2,
+                                    translation: .zero, scale: 1.0, rotation: 0.0, red: 0.35, green: 0.35, blue: 0.35, alpha: 0.5)
+            }
+            
+            if !(drawnEdges.contains(drawEdge2A) || drawnEdges.contains(drawEdge2B)) {
+                drawnEdges.insert(drawEdge2A)
+                smallLineBuffer.add(lineX1: triangle.point2.x, lineY1: triangle.point2.y,
+                                    lineX2: triangle.point3.x, lineY2: triangle.point3.y,
+                                    lineThickness: smallLineSprite.width2,
+                                    translation: .zero, scale: 1.0, rotation: 0.0, red: 0.35, green: 0.35, blue: 0.35, alpha: 0.5)
+            }
+            
+            if !(drawnEdges.contains(drawEdge3A) || drawnEdges.contains(drawEdge3B)) {
+                drawnEdges.insert(drawEdge3A)
+                smallLineBuffer.add(lineX1: triangle.point3.x, lineY1: triangle.point3.y,
+                                    lineX2: triangle.point1.x, lineY2: triangle.point1.y,
+                                    lineThickness: smallLineSprite.width2,
+                                    translation: .zero, scale: 1.0, rotation: 0.0, red: 0.35, green: 0.35, blue: 0.35, alpha: 0.5)
+            }
+            
+            
+            
+        }
+        
+        /*
+        for hullPoint in hullPoints {
+            DelauneyTriangulator.shared.partsFactory.depositPoint(hullPoint)
+        }
+        */
         
         
+        var index1 = sceneViewModel.polygon.count - 1
+        var index2 = 0
+        while index2 < sceneViewModel.polygon.count {
+            
+            let point1 = sceneViewModel.polygon[index1]
+            let point2 = sceneViewModel.polygon[index2]
+            
+            largeLineBuffer.add(lineX1: point1.x,
+                                lineY1: point1.y,
+                                lineX2: point2.x,
+                                lineY2: point2.y,
+                                lineThickness: largeLineSprite.width2,
+                                translation: .zero, scale: 1.0, rotation: 0.0,
+                                red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+            
+            if index2 == sceneViewModel.polygon.count - 1 {
+                largeDotBuffer.add(translation: .init(x: point2.x, y: point2.y), scale: 1.0, rotation: 0.0, red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0)
+            } else if index2 == 0 {
+                largeDotBuffer.add(translation: .init(x: point2.x, y: point2.y), scale: 1.0, rotation: 0.0, red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
+            } else {
+                largeDotBuffer.add(translation: .init(x: point2.x, y: point2.y), scale: 0.75, rotation: 0.0, red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0)
+            }
+            
+            
+            index1 = index2
+            index2 += 1
+        }
+        
+        /*
         smallLineBuffer.add(lineX1: 300.0, lineY1: 220.0, lineX2: 600.0, lineY2: 800.0, lineThickness: 2.0, translation: .zero, scale: 1.0, rotation: 0.0, red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        
-        
-        
-        largeLineBuffer.add(lineX1: 100.0, lineY1: 420.0, lineX2: 300.0, lineY2: 400.0, lineThickness: 10.0, translation: .zero, scale: 1.0, rotation: 0.0, red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0)
-        
         
         smallDotBuffer.add(translation: .init(x: 300.0, y: 200.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
         smallDotBuffer.add(translation: .init(x: 600.0, y: 200.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -162,13 +264,15 @@ class TriangleScene: GraphicsDelegate {
         largeDotBuffer.add(translation: .init(x: 300.0, y: 400.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
         largeDotBuffer.add(translation: .init(x: 600.0, y: 500.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
         largeDotBuffer.add(translation: .init(x: 800.0, y: 260.0), scale: 1.0, rotation: 0.0, red: 0.5, green: 1.0, blue: 1.0, alpha: 1.0)
+        */
         
+        triangleBuffer.cullMode = .none
         triangleBuffer.render(renderEncoder: renderEncoder)
         
         smallLineBuffer.render(renderEncoder: renderEncoder)
-        largeLineBuffer.render(renderEncoder: renderEncoder)
-        
         smallDotBuffer.render(renderEncoder: renderEncoder)
+        
+        largeLineBuffer.render(renderEncoder: renderEncoder)
         largeDotBuffer.render(renderEncoder: renderEncoder)
         
     }

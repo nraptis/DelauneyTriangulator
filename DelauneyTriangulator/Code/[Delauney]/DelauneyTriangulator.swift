@@ -11,7 +11,8 @@ class DelauneyTriangulator {
     
     static let shared = DelauneyTriangulator()
     
-    private let partsFactory: DelauneyTriangulatorPartsFactory
+    //private 
+    let partsFactory: DelauneyTriangulatorPartsFactory
     private let triangulationData: TriangulationData
     private(set) var triangles: [TriangulationTriangle]
     private var edgeStack: [TriangulationEdge]
@@ -42,8 +43,8 @@ class DelauneyTriangulator {
         }
     }
     
-    private func delauneyTriangulation(points: [TriangulationPoint],
-                                       superTriangleSize: Float = 8192) {
+    func delauneyTriangulation(points: [TriangulationPoint],
+                               superTriangleSize: Float = 8192) {
         if delauneyTriangulation(points: points,
                                  triangulationData: triangulationData,
                                  superTriangleSize: superTriangleSize) {

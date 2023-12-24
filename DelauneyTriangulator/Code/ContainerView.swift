@@ -17,8 +17,14 @@ struct ContainerView: View {
             GeometryReader { geometry in
                 TriangleSceneView(width: geometry.size.width,
                                   height: geometry.size.height)
+                .onAppear {
+                    sceneViewModel.generateRandomPolygon(width: Float(geometry.size.width),
+                                                         height: Float(geometry.size.height),
+                                                         count: 42)
+                }
             }
         }
+        .background(Color.black)
     }
 }
 
