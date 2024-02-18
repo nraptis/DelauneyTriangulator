@@ -14,10 +14,6 @@
 		E82B5E112B37775700CFED63 /* MetalPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5DF52B37775700CFED63 /* MetalPipeline.swift */; };
 		E82B5E122B37775700CFED63 /* MetalEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5DF62B37775700CFED63 /* MetalEngine.swift */; };
 		E82B5E132B37775700CFED63 /* MetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5DF72B37775700CFED63 /* MetalViewController.swift */; };
-		E82B5E1A2B37775700CFED63 /* TriangulationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E002B37775700CFED63 /* TriangulationData.swift */; };
-		E82B5E1B2B37775700CFED63 /* DelauneyTriangulatorPartsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E012B37775700CFED63 /* DelauneyTriangulatorPartsFactory.swift */; };
-		E82B5E1C2B37775700CFED63 /* EdgeGridBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E022B37775700CFED63 /* EdgeGridBucket.swift */; };
-		E82B5E1D2B37775700CFED63 /* DelauneyTriangulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E032B37775700CFED63 /* DelauneyTriangulator.swift */; };
 		E82B5E1E2B37775700CFED63 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E052B37775700CFED63 /* Math.swift */; };
 		E82B5E212B37775700CFED63 /* Sprite2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E082B37775700CFED63 /* Sprite2D.swift */; };
 		E82B5E222B37775700CFED63 /* SpriteInstance2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82B5E092B37775700CFED63 /* SpriteInstance2D.swift */; };
@@ -89,7 +85,17 @@
 		E86931A02B3788680067A51E /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E869319E2B3788680067A51E /* FileUtils.swift */; };
 		E86931A12B3788680067A51E /* FileBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E869319F2B3788680067A51E /* FileBuffer.swift */; };
 		E86931A32B378D0C0067A51E /* Uniforms.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931A22B378D0C0067A51E /* Uniforms.swift */; };
-		E86931A52B37DB610067A51E /* PolyPointBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86931A42B37DB610067A51E /* PolyPointBucket.swift */; };
+		E8E7EF762B828127004C28B0 /* DelauneyTriangulationTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF6B2B828127004C28B0 /* DelauneyTriangulationTriangle.swift */; };
+		E8E7EF772B828127004C28B0 /* DelauneyTriangulationVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF6C2B828127004C28B0 /* DelauneyTriangulationVertex.swift */; };
+		E8E7EF782B828127004C28B0 /* DelauneyTriangulationPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF6D2B828127004C28B0 /* DelauneyTriangulationPoint.swift */; };
+		E8E7EF792B828127004C28B0 /* DelauneyTriangulationPointInsidePolygonBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF6E2B828127004C28B0 /* DelauneyTriangulationPointInsidePolygonBucket.swift */; };
+		E8E7EF7A2B828127004C28B0 /* DelauneyTriangulatorPartsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF6F2B828127004C28B0 /* DelauneyTriangulatorPartsFactory.swift */; };
+		E8E7EF7B2B828127004C28B0 /* DelauneyTriangulationLineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF702B828127004C28B0 /* DelauneyTriangulationLineSegment.swift */; };
+		E8E7EF7C2B828127004C28B0 /* DelauneyTriangulationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF712B828127004C28B0 /* DelauneyTriangulationData.swift */; };
+		E8E7EF7D2B828127004C28B0 /* DelauneyTriangulationEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF722B828127004C28B0 /* DelauneyTriangulationEdge.swift */; };
+		E8E7EF7E2B828127004C28B0 /* DelauneyTriangulationFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF732B828127004C28B0 /* DelauneyTriangulationFace.swift */; };
+		E8E7EF7F2B828127004C28B0 /* DelauneyTriangulationEdgeBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF742B828127004C28B0 /* DelauneyTriangulationEdgeBucket.swift */; };
+		E8E7EF802B828127004C28B0 /* DelauneyTriangulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E7EF752B828127004C28B0 /* DelauneyTriangulator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -101,10 +107,6 @@
 		E82B5DF52B37775700CFED63 /* MetalPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalPipeline.swift; sourceTree = "<group>"; };
 		E82B5DF62B37775700CFED63 /* MetalEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalEngine.swift; sourceTree = "<group>"; };
 		E82B5DF72B37775700CFED63 /* MetalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalViewController.swift; sourceTree = "<group>"; };
-		E82B5E002B37775700CFED63 /* TriangulationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TriangulationData.swift; sourceTree = "<group>"; };
-		E82B5E012B37775700CFED63 /* DelauneyTriangulatorPartsFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulatorPartsFactory.swift; sourceTree = "<group>"; };
-		E82B5E022B37775700CFED63 /* EdgeGridBucket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeGridBucket.swift; sourceTree = "<group>"; };
-		E82B5E032B37775700CFED63 /* DelauneyTriangulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulator.swift; sourceTree = "<group>"; };
 		E82B5E052B37775700CFED63 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		E82B5E082B37775700CFED63 /* Sprite2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sprite2D.swift; sourceTree = "<group>"; };
 		E82B5E092B37775700CFED63 /* SpriteInstance2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpriteInstance2D.swift; sourceTree = "<group>"; };
@@ -176,7 +178,17 @@
 		E869319E2B3788680067A51E /* FileUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		E869319F2B3788680067A51E /* FileBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileBuffer.swift; sourceTree = "<group>"; };
 		E86931A22B378D0C0067A51E /* Uniforms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Uniforms.swift; sourceTree = "<group>"; };
-		E86931A42B37DB610067A51E /* PolyPointBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolyPointBucket.swift; sourceTree = "<group>"; };
+		E8E7EF6B2B828127004C28B0 /* DelauneyTriangulationTriangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationTriangle.swift; sourceTree = "<group>"; };
+		E8E7EF6C2B828127004C28B0 /* DelauneyTriangulationVertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationVertex.swift; sourceTree = "<group>"; };
+		E8E7EF6D2B828127004C28B0 /* DelauneyTriangulationPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationPoint.swift; sourceTree = "<group>"; };
+		E8E7EF6E2B828127004C28B0 /* DelauneyTriangulationPointInsidePolygonBucket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationPointInsidePolygonBucket.swift; sourceTree = "<group>"; };
+		E8E7EF6F2B828127004C28B0 /* DelauneyTriangulatorPartsFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulatorPartsFactory.swift; sourceTree = "<group>"; };
+		E8E7EF702B828127004C28B0 /* DelauneyTriangulationLineSegment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationLineSegment.swift; sourceTree = "<group>"; };
+		E8E7EF712B828127004C28B0 /* DelauneyTriangulationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationData.swift; sourceTree = "<group>"; };
+		E8E7EF722B828127004C28B0 /* DelauneyTriangulationEdge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationEdge.swift; sourceTree = "<group>"; };
+		E8E7EF732B828127004C28B0 /* DelauneyTriangulationFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationFace.swift; sourceTree = "<group>"; };
+		E8E7EF742B828127004C28B0 /* DelauneyTriangulationEdgeBucket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulationEdgeBucket.swift; sourceTree = "<group>"; };
+		E8E7EF752B828127004C28B0 /* DelauneyTriangulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelauneyTriangulator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -229,8 +241,8 @@
 		E82B5DF12B37775700CFED63 /* Code */ = {
 			isa = PBXGroup;
 			children = (
+				E8E7EF6A2B828127004C28B0 /* [Delauney] */,
 				E82B5DF22B37775700CFED63 /* DelauneyTriangulatorApp.swift */,
-				E82B5DFE2B37775700CFED63 /* [Delauney] */,
 				E82B5DF32B37775700CFED63 /* Metal */,
 				E82B5E042B37775700CFED63 /* Graphics */,
 				E86931212B3778B30067A51E /* TopMenu.swift */,
@@ -254,18 +266,6 @@
 				E82B5DF72B37775700CFED63 /* MetalViewController.swift */,
 			);
 			path = Metal;
-			sourceTree = "<group>";
-		};
-		E82B5DFE2B37775700CFED63 /* [Delauney] */ = {
-			isa = PBXGroup;
-			children = (
-				E82B5E032B37775700CFED63 /* DelauneyTriangulator.swift */,
-				E82B5E012B37775700CFED63 /* DelauneyTriangulatorPartsFactory.swift */,
-				E82B5E022B37775700CFED63 /* EdgeGridBucket.swift */,
-				E82B5E002B37775700CFED63 /* TriangulationData.swift */,
-				E86931A42B37DB610067A51E /* PolyPointBucket.swift */,
-			);
-			path = "[Delauney]";
 			sourceTree = "<group>";
 		};
 		E82B5E042B37775700CFED63 /* Graphics */ = {
@@ -374,6 +374,24 @@
 				E869319F2B3788680067A51E /* FileBuffer.swift */,
 			);
 			path = File;
+			sourceTree = "<group>";
+		};
+		E8E7EF6A2B828127004C28B0 /* [Delauney] */ = {
+			isa = PBXGroup;
+			children = (
+				E8E7EF6B2B828127004C28B0 /* DelauneyTriangulationTriangle.swift */,
+				E8E7EF6C2B828127004C28B0 /* DelauneyTriangulationVertex.swift */,
+				E8E7EF6D2B828127004C28B0 /* DelauneyTriangulationPoint.swift */,
+				E8E7EF6E2B828127004C28B0 /* DelauneyTriangulationPointInsidePolygonBucket.swift */,
+				E8E7EF6F2B828127004C28B0 /* DelauneyTriangulatorPartsFactory.swift */,
+				E8E7EF702B828127004C28B0 /* DelauneyTriangulationLineSegment.swift */,
+				E8E7EF712B828127004C28B0 /* DelauneyTriangulationData.swift */,
+				E8E7EF722B828127004C28B0 /* DelauneyTriangulationEdge.swift */,
+				E8E7EF732B828127004C28B0 /* DelauneyTriangulationFace.swift */,
+				E8E7EF742B828127004C28B0 /* DelauneyTriangulationEdgeBucket.swift */,
+				E8E7EF752B828127004C28B0 /* DelauneyTriangulator.swift */,
+			);
+			path = "[Delauney]";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -496,12 +514,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E82B5E1B2B37775700CFED63 /* DelauneyTriangulatorPartsFactory.swift in Sources */,
 				E82B5E232B37775700CFED63 /* IndexTriangleBufferSpriteColored2D.swift in Sources */,
 				E82B5E112B37775700CFED63 /* MetalPipeline.swift in Sources */,
 				E82B5E132B37775700CFED63 /* MetalViewController.swift in Sources */,
 				E82B5E212B37775700CFED63 /* Sprite2D.swift in Sources */,
 				E82B5E1E2B37775700CFED63 /* Math.swift in Sources */,
+				E8E7EF802B828127004C28B0 /* DelauneyTriangulator.swift in Sources */,
 				E86931222B3778B30067A51E /* TopMenu.swift in Sources */,
 				E82B5E0F2B37775700CFED63 /* DelauneyTriangulatorApp.swift in Sources */,
 				E86931282B37798E0067A51E /* SceneViewModel.swift in Sources */,
@@ -511,22 +529,28 @@
 				E86931352B377D680067A51E /* ShapeNodeIndexed.metal in Sources */,
 				E82B5E102B37775700CFED63 /* MetalView.swift in Sources */,
 				E86931262B3779670067A51E /* TriangleScene.swift in Sources */,
+				E8E7EF772B828127004C28B0 /* DelauneyTriangulationVertex.swift in Sources */,
+				E8E7EF762B828127004C28B0 /* DelauneyTriangulationTriangle.swift in Sources */,
 				E86931A02B3788680067A51E /* FileUtils.swift in Sources */,
 				E82B5E122B37775700CFED63 /* MetalEngine.swift in Sources */,
+				E8E7EF7E2B828127004C28B0 /* DelauneyTriangulationFace.swift in Sources */,
 				E86931362B377D680067A51E /* SpriteNodeIndexed.metal in Sources */,
 				E869312C2B377A3D0067A51E /* ContainerView.swift in Sources */,
-				E82B5E1A2B37775700CFED63 /* TriangulationData.swift in Sources */,
+				E8E7EF7B2B828127004C28B0 /* DelauneyTriangulationLineSegment.swift in Sources */,
 				E82B5E262B37775700CFED63 /* Graphics.swift in Sources */,
-				E86931A52B37DB610067A51E /* PolyPointBucket.swift in Sources */,
-				E82B5E1D2B37775700CFED63 /* DelauneyTriangulator.swift in Sources */,
 				E86931342B377D680067A51E /* Shape.metal in Sources */,
+				E8E7EF7A2B828127004C28B0 /* DelauneyTriangulatorPartsFactory.swift in Sources */,
 				E86931372B377D680067A51E /* Sprite.metal in Sources */,
 				E82B5E242B37775700CFED63 /* Matrix.swift in Sources */,
+				E8E7EF792B828127004C28B0 /* DelauneyTriangulationPointInsidePolygonBucket.swift in Sources */,
 				E869312A2B377A090067A51E /* SceneModel.swift in Sources */,
-				E82B5E1C2B37775700CFED63 /* EdgeGridBucket.swift in Sources */,
+				E8E7EF7C2B828127004C28B0 /* DelauneyTriangulationData.swift in Sources */,
+				E8E7EF782B828127004C28B0 /* DelauneyTriangulationPoint.swift in Sources */,
 				E869312E2B377CC10067A51E /* ControlsView.swift in Sources */,
+				E8E7EF7D2B828127004C28B0 /* DelauneyTriangulationEdge.swift in Sources */,
 				E86931A32B378D0C0067A51E /* Uniforms.swift in Sources */,
 				E86931242B3779310067A51E /* TriangleSceneView.swift in Sources */,
+				E8E7EF7F2B828127004C28B0 /* DelauneyTriangulationEdgeBucket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

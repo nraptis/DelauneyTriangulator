@@ -36,8 +36,8 @@ import UIKit
     var sceneModel = SceneModel()
     var number = 9
     
-    var polygonPointCountString: String = "64"
-    var innerPointCountString: String = "1024"
+    var polygonPointCountString: String = "40"
+    var innerPointCountString: String = "512"
     
     var polygon = [Point]()
     var innerPoints = [Point]()

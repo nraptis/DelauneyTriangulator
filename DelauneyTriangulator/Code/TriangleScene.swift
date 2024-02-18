@@ -10,16 +10,17 @@ import UIKit
 import simd
 
 struct DrawEdge: Hashable {
-    var point1: TriangulationPoint
-    var point2: TriangulationPoint
-    
-    init(point1: TriangulationPoint, point2: TriangulationPoint) {
-        
+    var point1: DelauneyTriangulationPoint
+    var point2: DelauneyTriangulationPoint
+    init(point1: DelauneyTriangulationPoint, point2: DelauneyTriangulationPoint) {
         self.point1 = point1
         self.point2 = point2
     }
 }
 
+extension SIMD2<Float>: PointProtocol {
+    
+}
 
 class TriangleScene: GraphicsDelegate {
     
@@ -145,13 +146,17 @@ class TriangleScene: GraphicsDelegate {
                 innerPoints.append(.init(point.x, point.y))
             }
             
-            DelauneyTriangulator.shared.triangulate(points: innerPoints)
+            DelauneyTriangulator.shared.triangulate(points: innerPoints,
+                                                    pointCount: innerPoints.count)
             
             break
         case .constrainedDelauney:
             
             var innerPoints = [SIMD2<Float>]()
             var hullPoints = [SIMD2<Float>]()
+            
+            print("sceneViewModel.polygon count = \(sceneViewModel.polygon.count)")
+            print("sceneViewModel.innerPoints count = \(sceneViewModel.innerPoints.count)")
             
             for point in sceneViewModel.polygon {
                 hullPoints.append(.init(point.x, point.y))
@@ -162,15 +167,18 @@ class TriangleScene: GraphicsDelegate {
             }
             
             DelauneyTriangulator.shared.triangulate(points: innerPoints,
-                                                                         hull: hullPoints)
+                                                    pointCount: innerPoints.count,
+                                                    hull: hullPoints,
+                                                    hullCount: hullPoints.count)
             
             break
             
         }
         
         var drawnEdges = Set<DrawEdge>()
-        for triangle in DelauneyTriangulator.shared.triangles {
+        for triangleIndex in 0..<DelauneyTriangulator.shared.triangleCount {
             
+            let triangle = DelauneyTriangulator.shared.triangles[triangleIndex]
             triangleBuffer.add(cornerX1: triangle.point1.x, cornerY1: triangle.point1.y,
                                cornerX2: triangle.point2.x, cornerY2: triangle.point2.y,
                                cornerX3: triangle.point3.x, cornerY3: triangle.point3.y,
@@ -178,7 +186,9 @@ class TriangleScene: GraphicsDelegate {
                                red: 0.5, green: 0.85, blue: 0.25, alpha: 0.5)
         }
         
-        for triangle in DelauneyTriangulator.shared.triangles {
+        for triangleIndex in 0..<DelauneyTriangulator.shared.triangleCount {
+            let triangle = DelauneyTriangulator.shared.triangles[triangleIndex]
+            
             let drawEdge1A = DrawEdge(point1: triangle.point1, point2: triangle.point2)
             let drawEdge1B = DrawEdge(point1: triangle.point2, point2: triangle.point1)
             

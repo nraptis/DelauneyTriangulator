@@ -12,24 +12,31 @@ Please note that the Constrained triangulation is technically no longer a "Delau
 Example of using Constrained Delauney with "hull" as the outer polygon:</br>
 
 ```
+struct MyPoint: PointProtocol {
+    var x: Float
+    var y: Float
+}
+
 let hull = [
-    SIMD2<Float>(-100.0, -100.0),
-    SIMD2<Float>(100.0, -100.0),
-    SIMD2<Float>(0.0, 100.0)
+    MyPoint(x: -100.0, y: -100.0),
+    MyPoint(x: 100.0, y: -100.0),
+    MyPoint(x: 0.0, y: 100.0)
 ]
 
 let points = [
-    SIMD2<Float>(-25.0, -10.0),
-    SIMD2<Float>(50.0, 10.0)
+    MyPoint(x: -25.0, y: -10.0),
+    MyPoint(x: 50.0, y: 10.0)
 ]
 
 let triangulator = DelauneyTriangulator.shared
 triangulator.triangulate(points: points,
+                         pointCount: points.count,
                          hull: hull,
+                         hullCount: hull.count,
                          superTriangleSize: 8192.0)
 
 var triangleIndex = 0
-while triangleIndex < triangulator.triangles.count {
+while triangleIndex < triangulator.triangleCount {
     let triangle = triangulator.triangles[triangleIndex]
     
     let point1 = triangle.point1
@@ -46,19 +53,24 @@ while triangleIndex < triangulator.triangles.count {
 
 Example of using Standard Delauney:</br>
 ```
+struct MyPoint: PointProtocol {
+    var x: Float
+    var y: Float
+}
+
 let points = [
-    SIMD2<Float>(-100.0, -100.0),
-    SIMD2<Float>(100.0, -100.0),
-    SIMD2<Float>(0.0, 0.0),
-    SIMD2<Float>(0.0, 100.0)
+    MyPoint(x: -100.0, y: -100.0),
+    MyPoint(x: 100.0, y: -100.0),
+    MyPoint(x: 0.0, y: 0.0),
+    MyPoint(x: 0.0, y: 100.0)
 ]
 
 let triangulator = DelauneyTriangulator.shared
 triangulator.triangulate(points: points,
-                         superTriangleSize: 8192.0)
+                         pointCount: points.count)
 
 var triangleIndex = 0
-while triangleIndex < triangulator.triangles.count {
+while triangleIndex < triangulator.triangleCount {
     let triangle = triangulator.triangles[triangleIndex]
     
     let point1 = triangle.point1
@@ -72,3 +84,8 @@ while triangleIndex < triangulator.triangles.count {
     triangleIndex += 1
 }
 ```
+
+Note: There is a rare bug in this demo app where the polygon can have a point which is on a line. In this case, it will fail to triangulate. The triangulation still works, but in this rare case it has invalid input.
+
+Note: This has gone through speed benchmarking. We are recycling memory in a klever way, so make sure that instead of using
+"tringles.count" you are using "triangleCount" as they may not agree.

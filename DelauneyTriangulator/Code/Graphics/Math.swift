@@ -14,9 +14,24 @@ extension SIMD2<Float> {
     }
 }
 
+struct IndexPair: Hashable, Equatable {
+    let index1: Int
+    let index2: Int
+}
+
+struct IndexPairOrdered: Hashable, Equatable {
+    let index1: Int
+    let index2: Int
+    init(index1: Int, index2: Int) {
+        self.index1 = min(index1, index2)
+        self.index2 = max(index1, index2)
+    }
+}
+
+
 struct Math {
     
-    struct Point: CustomStringConvertible {
+    struct Point: CustomStringConvertible, PointProtocol {
         var x: Float
         var y: Float
         var description: String {
@@ -46,10 +61,12 @@ struct Math {
         var float2: SIMD2<Float> {
             SIMD2<Float>(x, y)
         }
+        
         var cgPoint: CGPoint {
             CGPoint(x: CGFloat(x),
                     y: CGFloat(y))
         }
+        
         var vector: Vector {
             Vector(x: x,
                    y: y)
@@ -81,8 +98,35 @@ struct Math {
             }
             return distance
         }
+        
+        var lengthSquared: Float {
+            (x * x) + (y * y)
+        }
+        
+        var length: Float {
+            var _result = lengthSquared
+            if _result > Math.epsilon {
+                _result = sqrtf(_result)
+            } else {
+                _result = 0.0
+            }
+            return _result
+        }
+        
+        mutating func normalize() {
+            var length = lengthSquared
+            if length > Math.epsilon {
+                length = sqrtf(length)
+                x /= length
+                y /= length
+            } else {
+                print("Attempting to normalize [\(x), \(y)] very near zero...")
+                y = -1.0
+                x = 0.0
+            }
+        }
     }
-    struct Vector: CustomStringConvertible {
+    struct Vector: CustomStringConvertible, PointProtocol {
         var x: Float
         var y: Float
         var description: String {
@@ -175,21 +219,62 @@ struct Math {
     static let pi3 = Float.pi * 3.0
     static let pi4 = Float.pi * 4.0
     
+    static let _pi = -Float.pi
+    static let _pi2 = -Float.pi * 2.0
+    static let _pi3 = -Float.pi * 3.0
+    static let _pi4 = -Float.pi * 4.0
+    
     static let pi3_2 = (Float.pi * 3.0) / 2.0
     static let pi2_3 = (Float.pi * 2.0) / 3.0
-    
     static let pi3_4 = (Float.pi * 3.0) / 4.0
     static let pi4_3 = (Float.pi * 4.0) / 3.0
+    
+    static let pi3_5 = (Float.pi * 3.0) / 5.0
+    static let pi5_3 = (Float.pi * 5.0) / 3.0
+    static let pi4_5 = (Float.pi * 4.0) / 5.0
+    static let pi5_4 = (Float.pi * 5.0) / 4.0
+    static let pi5_6 = (Float.pi * 5.0) / 6.0
+    static let pi6_5 = (Float.pi * 6.0) / 5.0
+    
+    
+    
+    static let _pi3_2 = (-Float.pi * 3.0) / 2.0
+    static let _pi2_3 = (-Float.pi * 2.0) / 3.0
+    static let _pi3_4 = (-Float.pi * 3.0) / 4.0
+    static let _pi4_3 = (-Float.pi * 4.0) / 3.0
     
     static let pi_2 = Float.pi / 2.0
     static let pi_3 = Float.pi / 3.0
     static let pi_4 = Float.pi / 4.0
+    static let pi_5 = Float.pi / 5.0
     static let pi_6 = Float.pi / 6.0
+    static let pi_7 = Float.pi / 7.0
     static let pi_8 = Float.pi / 8.0
+    static let pi_9 = Float.pi / 9.0
     static let pi_10 = Float.pi / 10.0
+    static let pi_11 = Float.pi / 11.0
     static let pi_12 = Float.pi / 12.0
+    static let pi_13 = Float.pi / 13.0
     static let pi_14 = Float.pi / 14.0
+    static let pi_15 = Float.pi / 15.0
     static let pi_16 = Float.pi / 16.0
+    static let pi_17 = Float.pi / 17.0
+    static let pi_18 = Float.pi / 18.0
+    static let pi_19 = Float.pi / 19.0
+    static let pi_20 = Float.pi / 20.0
+    
+    
+    static let _pi_2 = -Float.pi / 2.0
+    static let _pi_3 = -Float.pi / 3.0
+    static let _pi_4 = -Float.pi / 4.0
+    static let _pi_5 = -Float.pi / 5.0
+    static let _pi_6 = -Float.pi / 6.0
+    static let _pi_7 = -Float.pi / 7.0
+    static let _pi_8 = -Float.pi / 8.0
+    static let _pi_10 = -Float.pi / 10.0
+    static let _pi_12 = -Float.pi / 12.0
+    static let _pi_14 = -Float.pi / 14.0
+    static let _pi_16 = -Float.pi / 16.0
     
     static let epsilon: Float = 0.00001
     //static let epsilon: Float = 0.01
@@ -223,8 +308,52 @@ struct Math {
         }
     }
     
+    static func distanceBetweenAnglesUnsafe(_ angle1: Float, _ angle2: Float) -> Float {
+        var difference = angle1 - angle2
+        if difference < Math._pi2 { difference += Math.pi2 }
+        if difference > Math.pi2 { difference -= Math.pi2 }
+        if difference < 0 { difference += Math.pi2 }
+        if difference > Float.pi {
+            return Math.pi2 - difference
+        } else {
+            return -difference
+        }
+    }
+    
     static func distanceBetweenAnglesAbsolute(_ angle1: Float, _ angle2: Float) -> Float {
-        fabsf(distanceBetweenAngles(angle1, angle2))
+        var difference = angle1 - angle2
+        if difference > Math.pi4 {
+            difference = fmodf(angle1 - angle2, Math.pi2)
+        } else if difference < Math._pi4 {
+            difference = fmodf(angle1 - angle2, Math.pi2)
+        } else if difference > Math.pi2 {
+            difference -= Math.pi2
+        } else if difference < Math._pi2 {
+            difference += Math.pi2
+        }
+        if difference < 0 { difference += Math.pi2 }
+        if difference > Float.pi {
+            return Math.pi2 - difference
+        } else {
+            return difference
+        }
+    }
+    
+    static func distanceBetweenAnglesAbsoluteUnsafe(_ angle1: Float, _ angle2: Float) -> Float {
+        var difference = angle1 - angle2
+        if difference > Math.pi2 {
+            difference -= Math.pi2
+        } else if difference < Math._pi2 {
+            difference += Math.pi2
+        }
+        if difference < 0.0 {
+            difference += Math.pi2
+        }
+        if difference > Float.pi {
+            return Math.pi2 - difference
+        } else {
+            return difference
+        }
     }
     
     static func rotate(float3: simd_float3, radians: Float, axisX: Float, axisY: Float, axisZ: Float) -> simd_float3 {
@@ -342,16 +471,36 @@ struct Math {
     }
     
     static func distance(point1: Point, point2: Point) -> Float {
-        let distanceSquared = distanceSquared(point1: point1, point2: point2)
+        let diffX = point2.x - point1.x
+        let diffY = point2.y - point1.y
+        let distanceSquared = diffX * diffX + diffY * diffY
         if distanceSquared > Self.epsilon {
             return sqrtf(distanceSquared)
+        } else {
+            return 0.0
         }
-        return 0.0
+    }
+    
+    static func distance(x1: Float, y1: Float, x2: Float, y2: Float) -> Float {
+        let diffX = x2 - x1
+        let diffY = y2 - y1
+        let distanceSquared = diffX * diffX + diffY * diffY
+        if distanceSquared > Self.epsilon {
+            return sqrtf(distanceSquared)
+        } else {
+            return 0.0
+        }
     }
 
     static func distanceSquared(point1: Point, point2: Point) -> Float {
         let diffX = point2.x - point1.x
         let diffY = point2.y - point1.y
+        return diffX * diffX + diffY * diffY
+    }
+    
+    static func distanceSquared(x1: Float, y1: Float, x2: Float, y2: Float) -> Float {
+        let diffX = x2 - x1
+        let diffY = y2 - y1
         return diffX * diffX + diffY * diffY
     }
     
@@ -576,6 +725,7 @@ struct Math {
         (point2.x - point1.x) * (point3.y - point2.y) - (point3.x - point2.x) * (point2.y - point1.y) > 0.0
     }
     
+    /*
     enum LineSegmentNormalResult {
         case invalid
         case valid(normal: Vector)
@@ -587,8 +737,8 @@ struct Math {
         var length = direction.lengthSquared
         if length > Math.epsilon {
             length = sqrtf(length)
-            direction.x /= length
-            direction.y /= length
+            directionX /= length
+            directionY /= length
             let normal = direction.normal
             return LineSegmentNormalResult.valid(normal: normal)
         } else {
@@ -599,7 +749,7 @@ struct Math {
     enum LineRayIntersectionResult {
         case invalidLineNormal
         case invalidCoplanar
-        case valid(point: Point, distance: Float)
+        case valid(pointX: Float, pointY: Float, distance: Float)
     }
     // Precondition: rayDirection is normalized
     static func lineIntersectionRay(linePoint1: Point, linePoint2: Point,
@@ -615,35 +765,41 @@ struct Math {
             switch rayIntersectionRayResult {
             case .invalidCoplanar:
                 return .invalidCoplanar
-            case .valid(point: let point, distance: let distance):
-                return .valid(point: point, distance: distance)
+            case .valid(let pointX, let pointY, let distance):
+                return .valid(pointX: pointX, pointY: pointY, distance: distance)
             }
         }
     }
+    */
     
     enum RayRayIntersectionResult {
         case invalidCoplanar
-        case valid(point: Point, distance: Float)
+        case valid(pointX: Float, pointY: Float, distance: Float)
     }
     // Precondition: rayNormal1 is normalized
     // Precondition: rayDirection2 is normalized
-    static func rayIntersectionRay(rayOrigin1: Point, rayNormal1: Vector,
-                                   rayOrigin2: Point, rayDirection2: Vector) -> RayRayIntersectionResult {
-        let numerator = rayNormal1.x * rayOrigin2.x +
-                        rayNormal1.y * rayOrigin2.y -
-                        dot(x1: rayOrigin1.x, y1: rayOrigin1.y,
-                            x2: rayNormal1.x, y2: rayNormal1.y)
-        let denominator = rayDirection2.x * rayNormal1.x + rayDirection2.y * rayNormal1.y
-        if denominator < _epsilon || denominator > epsilon {
-            let distance = -(numerator / denominator)
-            let intersectionPoint = Point(x: rayOrigin2.x + rayDirection2.x * distance,
-                                          y: rayOrigin2.y + rayDirection2.y * distance)
-            return .valid(point: intersectionPoint,
-                          distance: distance)
-        } else {
-            return .invalidCoplanar
+    static func rayIntersectionRay(rayOrigin1X: Float,
+                                   rayOrigin1Y: Float,
+                                   rayNormal1X: Float,
+                                   rayNormal1Y: Float,
+                                   rayOrigin2X: Float,
+                                   rayOrigin2Y: Float,
+                                   rayDirection2X: Float,
+                                   rayDirection2Y: Float) -> RayRayIntersectionResult {
+            let numerator = rayNormal1X * rayOrigin2X +
+                            rayNormal1Y * rayOrigin2Y -
+                            dot(x1: rayOrigin1X, y1: rayOrigin1Y,
+                                x2: rayNormal1X, y2: rayNormal1Y)
+            let denominator = rayDirection2X * rayNormal1X + rayDirection2Y * rayNormal1Y
+            if denominator < _epsilon || denominator > epsilon {
+                let distance = -(numerator / denominator)
+                return .valid(pointX: rayOrigin2X + rayDirection2X * distance,
+                              pointY: rayOrigin2Y + rayDirection2Y * distance,
+                              distance: distance)
+            } else {
+                return .invalidCoplanar
+            }
         }
-    }
     
     static func segmentClosestPoint(point: Point,
                                     linePoint1: Point,
@@ -723,7 +879,7 @@ struct Math {
     
     static func lineSegmentFacesLineSegment(line1Point1: Point, line1Point2: Point, line2Point1: Point, line2Point2: Point) -> Bool {
         // If both of line 1 are embedded in line 2, then no.
-        if 
+        if
             pointEmbeddedInLineSegmentPlane(point: line1Point1,
                                            linePoint1: line2Point1,
                                            linePoint2: line2Point2)  &&
@@ -775,13 +931,219 @@ struct Math {
         let lineDirAngle2 = atan2f(lineDirX2, lineDirY2)
         let lineDirAngle3 = atan2f(lineDirX3, lineDirY3)
         
-        let triangleAngle1 = Math.pi - distanceBetweenAnglesAbsolute(lineDirAngle3, lineDirAngle1)
-        let triangleAngle2 = Math.pi - distanceBetweenAnglesAbsolute(lineDirAngle2, lineDirAngle1)
-        let triangleAngle3 = Math.pi - distanceBetweenAnglesAbsolute(lineDirAngle2, lineDirAngle3)
+        let antiAngle1 = distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle3, lineDirAngle1)
+        let antiAngle2 = distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle2, lineDirAngle1)
+        let antiAngle3 = distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle2, lineDirAngle3)
         
-        return TriangleAnglesResult(angle1: triangleAngle1,
-                                    angle2: triangleAngle2,
-                                    angle3: triangleAngle3)
+        return TriangleAnglesResult(angle1: Math.pi - antiAngle1,
+                                    angle2: Math.pi - antiAngle2,
+                                    angle3: Math.pi - antiAngle3)
+    }
+    
+    static func triangleMinimumAngle(point1: Point, point2: Point, point3: Point) -> Float {
+        
+        let lineDirX1 = point1.x - point2.x
+        let lineDirY1 = point1.y - point2.y
+        guard (lineDirX1 * lineDirX1 + lineDirY1 * lineDirY1) > Math.epsilon else {
+            return 0.0
+        }
+        
+        let lineDirX2 = point2.x - point3.x
+        let lineDirY2 = point2.y - point3.y
+        guard (lineDirX2 * lineDirX2 + lineDirY2 * lineDirY2) > Math.epsilon else {
+            return 0.0
+        }
+        
+        let lineDirX3 = point3.x - point1.x
+        let lineDirY3 = point3.y - point1.y
+        guard (lineDirX3 * lineDirX3 + lineDirY3 * lineDirY3) > Math.epsilon else {
+            return 0.0
+        }
+        
+        let lineDirAngle1 = atan2f(lineDirX1, lineDirY1)
+        let lineDirAngle2 = atan2f(lineDirX2, lineDirY2)
+        let lineDirAngle3 = atan2f(lineDirX3, lineDirY3)
+        
+        let antiAngle1 = distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle3, lineDirAngle1)
+        let antiAngle2 = distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle2, lineDirAngle1)
+        let antiAngle3 = distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle2, lineDirAngle3)
+        
+        let triangleAngle1 = Math.pi - antiAngle1
+        let triangleAngle2 = Math.pi - antiAngle2
+        let triangleAngle3 = Math.pi - antiAngle3
+        
+        var result = triangleAngle1
+        if triangleAngle2 < result { result = triangleAngle2 }
+        if triangleAngle3 < result { result = triangleAngle3 }
+        
+        return result
+    }
+    
+    //
+    // This is specifically the angle with p2 as the center point
+    //
+    //  P1
+    //  |
+    //  |
+    //  P2-----P3
+    //
+    //  would return pi / 2
+    //
+    static func triangleAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
+        
+        // the angle of line (p1, p2)
+        let angle1 = -atan2f(-(x1 - x2), -(y1 - y2))
+        
+        // the angle of line (p3, p2)
+        let angle2 = -atan2f(-(x3 - x2), -(y3 - y2))
+
+        // add the 2 directions together, this is the "p2 normal"
+        let normalX = sin(angle1) + sin(angle2)
+        let normalY = -cos(angle1) - cos(angle2)
+        
+        // maybe we are exceedingly close to 180 degrees, e.g. the normal is tiny
+        guard (normalX * normalX + normalY * normalY > Math.epsilon) else {
+            
+            // make small adjustment to the angles, this will still
+            // be the exact same answer (within floating point percision).
+            let normalX = sin(angle1 - 0.25) + sin(angle2 + 0.25)
+            let normalY = -cos(angle1 - 0.25) - cos(angle2 + 0.25)
+            
+            // angle of the point's normal
+            let angle3 = -atan2f(-normalX, -normalY)
+            
+            // the point normal bend to one of the line segments
+            var difference = angle3 - angle1
+            
+            if difference < 0.0 {
+                // all our angles are positive
+                difference += Math.pi2
+            }
+            
+            // the opposite part of the circle, which is half of
+            // the full "point 2 angle"
+            let half = Math.pi2 - difference
+            
+            // half + half = whole
+            return half + half
+        }
+        
+        // angle of the point's normal
+        let angle3 = -atan2f(-normalX, -normalY)
+        
+        // the point normal bend to one of the line segments
+        var difference = angle3 - angle1
+        if difference < 0.0 {
+            // all our angles are positive
+            difference += Math.pi2
+        }
+        
+        //
+        // if the triangle is clockwise, we are less than 180 degrees,
+        // otherwise, we are more than 180 degrees, so the math is different.
+        //
+        if (x1 * y2 + x3 * y1 + x2 * y3 - x1 * y3 - x3 * y2 - x2 * y1) > 0.0 {
+            // the opposite part of the circle, which is half of
+            // the full "point 2 angle"
+            let half = Math.pi2 - difference
+            
+            // half + half = whole
+            return half + half
+        } else {
+            
+            // the opposite part of the circle, which is half of
+            // the full "point 2 angle", so we take twice
+            return Math.pi2 - (difference + difference)
+        }
+    }
+    
+    /*
+    static func triangleAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
+        
+        let angle1 = -atan2f(-(x1 - x2), -(y1 - y2))
+        let angle2 = -atan2f(-(x3 - x2), -(y3 - y2))
+        
+        let dirX1 = sin(angle1)
+        let dirY1 = -cos(angle1)
+        
+        let dirX2 = sin(angle2)
+        let dirY2 = -cos(angle2)
+        
+        var normalX = dirX1 + dirX2
+        var normalY = dirY1 + dirY2
+        
+        guard (normalX * normalX + normalY * normalY > 0.2) else {
+            
+            let dirX1 = sin(angle1 - 0.25)
+            let dirY1 = -cos(angle1 - 0.25)
+            
+            let dirX2 = sin(angle2 + 0.25)
+            let dirY2 = -cos(angle2 + 0.25)
+            
+            var normalX = dirX1 + dirX2
+            var normalY = dirY1 + dirY2
+            
+            let angle3 = -atan2f(-normalX, -normalY)
+            
+            var difference = angle3 - angle1
+            if difference < 0.0 {
+                difference += Math.pi2
+            }
+            
+            let half = Math.pi2 - difference
+            return half + half
+
+        }
+        
+        let angle3 = -atan2f(-normalX, -normalY)
+        
+        var difference = angle3 - angle1
+        if difference < 0.0 {
+            difference += Math.pi2
+        }
+        
+        if (x1 * y2 + x3 * y1 + x2 * y3 - x1 * y3 - x3 * y2 - x2 * y1) > 0.0 {
+            let half = Math.pi2 - difference
+            return half + half
+        } else {
+            return Math.pi2 - (difference + difference)
+        }
+    }
+    */
+    
+    static func triangleMinimumAngle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Float {
+        
+        let lineDirX1 = x1 - x2
+        let lineDirY1 = y1 - y2
+        guard (lineDirX1 * lineDirX1 + lineDirY1 * lineDirY1) > Math.epsilon else {
+            return 0.0
+        }
+        
+        let lineDirX2 = x2 - x3
+        let lineDirY2 = y2 - y3
+        guard (lineDirX2 * lineDirX2 + lineDirY2 * lineDirY2) > Math.epsilon else {
+            return 0.0
+        }
+        
+        let lineDirX3 = x3 - x1
+        let lineDirY3 = y3 - y1
+        guard (lineDirX3 * lineDirX3 + lineDirY3 * lineDirY3) > Math.epsilon else {
+            return 0.0
+        }
+        
+        let lineDirAngle1 = atan2f(lineDirX1, lineDirY1)
+        let lineDirAngle2 = atan2f(lineDirX2, lineDirY2)
+        let lineDirAngle3 = atan2f(lineDirX3, lineDirY3)
+        
+        let triangleAngle1 = Math.pi - distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle3, lineDirAngle1)
+        let triangleAngle2 = Math.pi - distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle2, lineDirAngle1)
+        let triangleAngle3 = Math.pi - distanceBetweenAnglesAbsoluteUnsafe(lineDirAngle2, lineDirAngle3)
+        
+        var result = triangleAngle1
+        if triangleAngle2 < result { result = triangleAngle2 }
+        if triangleAngle3 < result { result = triangleAngle3 }
+        
+        return result
     }
     
     static func triangleArea(point1: Point, point2: Point, point3: Point) -> Float {
@@ -818,7 +1180,7 @@ struct Math {
         }
     }
     
-    
+    /*
     static func lineSegmentIntersectsLineSegment(line1Point1X: Float,
                                                  line1Point1Y: Float,
                                                  line1Point2X: Float,
@@ -828,46 +1190,232 @@ struct Math {
                                                  line2Point2X: Float,
                                                  line2Point2Y: Float) -> Bool {
 
-        let maxX2 = max(line2Point1X, line2Point2X)
-        let minX1 = min(line1Point1X, line1Point2X)
+        let result1 = lineSegmentIntersectsLineSegmentOld(line1Point1X: line1Point1X,
+                                                          line1Point1Y: line1Point1Y,
+                                                          line1Point2X: line1Point2X,
+                                                          line1Point2Y: line1Point2Y,
+                                                          line2Point1X: line2Point1X,
+                                                          line2Point1Y: line2Point1Y,
+                                                          line2Point2X: line2Point2X,
+                                                          line2Point2Y: line2Point2Y)
         
-        if maxX2 < minX1 {
+        let result2 = lineSegmentIntersectsLineSegmentNew(line1Point1X: line1Point1X,
+                                                          line1Point1Y: line1Point1Y,
+                                                          line1Point2X: line1Point2X,
+                                                          line1Point2Y: line1Point2Y,
+                                                          line2Point1X: line2Point1X,
+                                                          line2Point1Y: line2Point1Y,
+                                                          line2Point2X: line2Point2X,
+                                                          line2Point2Y: line2Point2Y)
+        
+        if result1 != result2 {
+            print("Mismatch Line Segments [\(line1Point1X) \(line1Point1Y), \(line1Point2X) \(line1Point2Y)], [\(line2Point1X) \(line2Point1Y), \(line2Point2X) \(line2Point2Y)]")
+            fatalError("You Are Gay!")
+        }
+        
+        return result2
+    }
+    */
+    
+    static func lineSegmentIntersectsLineSegment(line1Point1X: Float,
+                                                 line1Point1Y: Float,
+                                                 line1Point2X: Float,
+                                                 line1Point2Y: Float,
+                                                 line2Point1X: Float,
+                                                 line2Point1Y: Float,
+                                                 line2Point2X: Float,
+                                                 line2Point2Y: Float) -> Bool {
+        
+        let area1 = (line1Point2X - line1Point1X) * (line2Point1Y - line1Point1Y) - (line2Point1X - line1Point1X) * (line1Point2Y - line1Point1Y)
+        if fabsf(area1) < Math.epsilon {
+            if fabsf(line1Point1X - line1Point2X) > Math.epsilon {
+                if (line1Point1X <= line2Point1X) && (line2Point1X <= line1Point2X) {
+                    return true
+                } else if (line1Point1X >= line2Point1X) && (line2Point1X >= line1Point2X) {
+                    return true
+                }
+            } else {
+                if (line1Point1Y <= line2Point1Y) && (line2Point1Y <= line1Point2Y) {
+                    return true
+                } else if (line1Point1Y >= line2Point1Y) && (line2Point1Y >= line1Point2Y) {
+                    return true
+                }
+            }
+            if fabsf((line1Point2X - line1Point1X) * (line2Point2Y - line1Point1Y) -
+                     (line2Point2X - line1Point1X) * (line1Point2Y - line1Point1Y)) < Math.epsilon {
+                if fabsf(line2Point1X - line2Point2X) > Math.epsilon {
+                    if (line2Point1X <= line1Point1X) && (line1Point1X <= line2Point2X) {
+                        return true
+                    } else if (line2Point1X >= line1Point1X) && (line1Point1X >= line2Point2X) {
+                        return true
+                    } else if (line2Point1X <= line1Point2X) && (line1Point2X <= line2Point2X) {
+                        return true
+                    } else if (line2Point1X >= line1Point2X) && (line1Point2X >= line2Point2X) {
+                        return true
+                    }
+                } else {
+                    if (line2Point1Y <= line1Point1Y) && (line1Point1Y <= line2Point2Y) {
+                        return true
+                    } else if (line2Point1Y >= line1Point1Y) && (line1Point1Y >= line2Point2Y) {
+                        return true
+                    } else if (line2Point1Y <= line1Point2Y) && (line1Point2Y <= line2Point2Y) {
+                        return true
+                    } else if (line2Point1Y >= line1Point2Y) && (line1Point2Y >= line2Point2Y) {
+                        return true
+                    }
+                }
+            }
             return false
         }
+        
+        let area2 = (line1Point2X - line1Point1X) * (line2Point2Y - line1Point1Y) - (line2Point2X - line1Point1X) * (line1Point2Y - line1Point1Y)
+        if fabsf(area2) < Math.epsilon {
+            if fabsf(line1Point1X - line1Point2X) > Math.epsilon {
+                if (line1Point1X <= line2Point2X) && (line2Point2X <= line1Point2X) {
+                    return true
+                } else if (line1Point1X >= line2Point2X) && (line2Point2X >= line1Point2X) {
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                if (line1Point1Y <= line2Point2Y) && (line2Point2Y <= line1Point2Y) {
+                    return true
+                } else if (line1Point1Y >= line2Point2Y) && (line2Point2Y >= line1Point2Y) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+        
+        let area3 = (line2Point2X - line2Point1X) * (line1Point1Y - line2Point1Y) - (line1Point1X - line2Point1X) * (line2Point2Y - line2Point1Y)
+        if fabsf(area3) < Math.epsilon {
+            
+            if fabsf(line2Point1X - line2Point2X) > Math.epsilon {
+                if (line2Point1X <= line1Point1X) && (line1Point1X <= line2Point2X) {
+                    return true
+                } else if (line2Point1X >= line1Point1X) && (line1Point1X >= line2Point2X) {
+                    return true
+                }
+            } else {
+                if (line2Point1Y <= line1Point1Y) && (line1Point1Y <= line2Point2Y) {
+                    return true
+                } else if (line2Point1Y >= line1Point1Y) && (line1Point1Y >= line2Point2Y) {
+                    return true
+                }
+            }
+            if fabsf((line2Point2X - line2Point1X) * (line1Point2Y - line2Point1Y) -
+                     (line1Point2X - line2Point1X) * (line2Point2Y - line2Point1Y)) < Math.epsilon {
+                if fabsf(line1Point1X - line1Point2X) > Math.epsilon {
+                    if (line1Point1X <= line2Point1X) && (line2Point1X <= line1Point2X) {
+                        return true
+                    } else if (line1Point1X >= line2Point1X) && (line2Point1X >= line1Point2X) {
+                        return true
+                    } else if (line1Point1X <= line2Point2X) && (line2Point2X <= line1Point2X) {
+                        return true
+                    } else if (line1Point1X >= line2Point2X) && (line2Point2X >= line1Point2X) {
+                        return true
+                    }
+                } else {
+                    if (line1Point1Y <= line2Point1Y) && (line2Point1Y <= line1Point2Y) {
+                        return true
+                    } else if (line1Point1Y >= line2Point1Y) && (line2Point1Y >= line1Point2Y) {
+                        return true
+                    } else if (line1Point1Y <= line2Point2Y) && (line2Point2Y <= line1Point2Y) {
+                        return true
+                    } else if (line1Point1Y >= line2Point2Y) && (line2Point2Y >= line1Point2Y) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+        let area4 = (line2Point2X - line2Point1X) * (line1Point2Y - line2Point1Y) - (line1Point2X - line2Point1X) * (line2Point2Y - line2Point1Y)
+        if fabsf(area4) < Math.epsilon {
+            if fabsf(line2Point1X - line2Point2X) > Math.epsilon {
+                if (line2Point1X <= line1Point2X) && (line1Point2X <= line2Point2X) {
+                    return true
+                } else if (line2Point1X >= line1Point2X) && (line1Point2X >= line2Point2X) {
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                if (line2Point1Y <= line1Point2Y) && (line1Point2Y <= line2Point2Y) {
+                    return true
+                } else if (line2Point1Y >= line1Point2Y) && (line1Point2Y >= line2Point2Y) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+        return ((area1 > 0.0) != (area2 > 0.0)) && ((area3 > 0.0) != (area4 > 0.0))
+    }
+    
+    static func lineSegmentIntersectsLineSegmentOld(line1Point1X: Float,
+                                                 line1Point1Y: Float,
+                                                 line1Point2X: Float,
+                                                 line1Point2Y: Float,
+                                                 line2Point1X: Float,
+                                                 line2Point1Y: Float,
+                                                 line2Point2X: Float,
+                                                 line2Point2Y: Float) -> Bool {
+
+        /*
+        let maxX2 = max(line2Point1X, line2Point2X)
+        let minX1 = min(line1Point1X, line1Point2X)
+        if maxX2 < minX1 { return false }
         
         let maxY2 = max(line2Point1Y, line2Point2Y)
         let minY1 = min(line1Point1Y, line1Point2Y)
-        
-        if maxY2 < minY1 {
-            return false
-        }
+        if maxY2 < minY1 { return false }
         
         let minX2 = min(line2Point1X, line2Point2X)
         let maxX1 = max(line1Point1X, line1Point2X)
-        
-        if minX2 > maxX1 {
-            return false
-        }
+        if minX2 > maxX1 { return false }
         
         let minY2 = min(line2Point1Y, line2Point2Y)
         let maxY1 = max(line1Point1Y, line1Point2Y)
+        if minY2 > maxY1 { return false }
+        */
         
-        if minY2 > maxY1 {
-            return false
-        }
-        
-        
-        
-        let area1 = triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y)
+        let area1 = triangleArea(x1: line1Point1X,
+                                 y1: line1Point1Y,
+                                 x2: line1Point2X,
+                                 y2: line1Point2Y,
+                                 x3: line2Point1X,
+                                 y3: line2Point1Y)
         if fabsf(area1) < Math.epsilon {
-            if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y) {
+            if between(x1: line1Point1X,
+                       y1: line1Point1Y,
+                       x2: line1Point2X,
+                       y2: line1Point2Y,
+                       x3: line2Point1X,
+                       y3: line2Point1Y) {
                 return true
             } else {
-                if fabsf(triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)) < Math.epsilon {
-                    if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y) {
+                if triangleAreaAbsolute(x1: line1Point1X,
+                                        y1: line1Point1Y,
+                                        x2: line1Point2X,
+                                        y2: line1Point2Y,
+                                        x3: line2Point2X,
+                                        y3: line2Point2Y) < Math.epsilon {
+                    if between(x1: line2Point1X,
+                               y1: line2Point1Y,
+                               x2: line2Point2X,
+                               y2: line2Point2Y,
+                               x3: line1Point1X,
+                               y3: line1Point1Y) {
                         return true
                     }
-                    if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y) {
+                    if between(x1: line2Point1X,
+                               y1: line2Point1Y,
+                               x2: line2Point2X,
+                               y2: line2Point2Y,
+                               x3: line1Point2X,
+                               y3: line1Point2Y) {
                         return true
                     }
                     return false
@@ -875,20 +1423,55 @@ struct Math {
                 return false
             }
         }
-        let area2 = triangleArea(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)
-        if fabsf(area2) <= Math.epsilon {
-            return between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y)
+        let area2 = triangleArea(x1: line1Point1X,
+                                 y1: line1Point1Y,
+                                 x2: line1Point2X,
+                                 y2: line1Point2Y,
+                                 x3: line2Point2X,
+                                 y3: line2Point2Y)
+        if fabsf(area2) < Math.epsilon {
+            return between(x1: line1Point1X,
+                           y1: line1Point1Y,
+                           x2: line1Point2X,
+                           y2: line1Point2Y,
+                           x3: line2Point2X,
+                           y3: line2Point2Y)
         }
-        let area3 = triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y)
-        if fabsf(area3) <= Math.epsilon {
-            if between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point1X, y3: line1Point1Y) {
+        let area3 = triangleArea(x1: line2Point1X,
+                                 y1: line2Point1Y,
+                                 x2: line2Point2X,
+                                 y2: line2Point2Y,
+                                 x3: line1Point1X,
+                                 y3: line1Point1Y)
+        if fabsf(area3) < Math.epsilon {
+            if between(x1: line2Point1X,
+                       y1: line2Point1Y,
+                       x2: line2Point2X,
+                       y2: line2Point2Y,
+                       x3: line1Point1X,
+                       y3: line1Point1Y) {
                 return true
             } else {
-                if fabsf(triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)) < Math.epsilon {
-                    if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point1X, y3: line2Point1Y) {
+                if triangleAreaAbsolute(x1: line2Point1X,
+                                        y1: line2Point1Y,
+                                        x2: line2Point2X,
+                                        y2: line2Point2Y,
+                                        x3: line1Point2X,
+                                        y3: line1Point2Y) < Math.epsilon {
+                    if between(x1: line1Point1X,
+                               y1: line1Point1Y,
+                               x2: line1Point2X,
+                               y2: line1Point2Y,
+                               x3: line2Point1X,
+                               y3: line2Point1Y) {
                         return true
                     }
-                    if between(x1: line1Point1X, y1: line1Point1Y, x2: line1Point2X, y2: line1Point2Y, x3: line2Point2X, y3: line2Point2Y) {
+                    if between(x1: line1Point1X,
+                               y1: line1Point1Y,
+                               x2: line1Point2X,
+                               y2: line1Point2Y,
+                               x3: line2Point2X,
+                               y3: line2Point2Y) {
                         return true
                     }
                     return false
@@ -896,9 +1479,19 @@ struct Math {
                 return false
             }
         }
-        let area4 = triangleArea(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)
-        if fabsf(area4) <= Math.epsilon {
-            return between(x1: line2Point1X, y1: line2Point1Y, x2: line2Point2X, y2: line2Point2Y, x3: line1Point2X, y3: line1Point2Y)
+        let area4 = triangleArea(x1: line2Point1X,
+                                 y1: line2Point1Y,
+                                 x2: line2Point2X,
+                                 y2: line2Point2Y,
+                                 x3: line1Point2X,
+                                 y3: line1Point2Y)
+        if fabsf(area4) < Math.epsilon {
+            return between(x1: line2Point1X,
+                           y1: line2Point1Y,
+                           x2: line2Point2X,
+                           y2: line2Point2Y,
+                           x3: line1Point2X,
+                           y3: line1Point2Y)
         }
         return ((area1 > 0.0) != (area2 > 0.0)) && ((area3 > 0.0) != (area4 > 0.0))
     }
@@ -910,33 +1503,19 @@ struct Math {
 
         let maxX2 = max(line2Point1.x, line2Point2.x)
         let minX1 = min(line1Point1.x, line1Point2.x)
-        
-        if maxX2 < minX1 {
-            return false
-        }
+        if maxX2 < minX1 { return false }
         
         let maxY2 = max(line2Point1.y, line2Point2.y)
         let minY1 = min(line1Point1.y, line1Point2.y)
-        
-        if maxY2 < minY1 {
-            return false
-        }
+        if maxY2 < minY1 { return false }
         
         let minX2 = min(line2Point1.x, line2Point2.x)
         let maxX1 = max(line1Point1.x, line1Point2.x)
-        
-        if minX2 > maxX1 {
-            return false
-        }
+        if minX2 > maxX1 { return false }
         
         let minY2 = min(line2Point1.y, line2Point2.y)
         let maxY1 = max(line1Point1.y, line1Point2.y)
-        
-        if minY2 > maxY1 {
-            return false
-        }
-        
-        
+        if minY2 > maxY1 { return false }
         
         let area1 = triangleArea(x1: line1Point1.x, y1: line1Point1.y, x2: line1Point2.x, y2: line1Point2.y, x3: line2Point1.x, y3: line2Point1.y)
         if fabsf(area1) < Math.epsilon {
@@ -956,11 +1535,11 @@ struct Math {
             }
         }
         let area2 = triangleArea(x1: line1Point1.x, y1: line1Point1.y, x2: line1Point2.x, y2: line1Point2.y, x3: line2Point2.x, y3: line2Point2.y)
-        if fabsf(area2) <= Math.epsilon {
+        if fabsf(area2) < Math.epsilon {
             return between(x1: line1Point1.x, y1: line1Point1.y, x2: line1Point2.x, y2: line1Point2.y, x3: line2Point2.x, y3: line2Point2.y)
         }
         let area3 = triangleArea(x1: line2Point1.x, y1: line2Point1.y, x2: line2Point2.x, y2: line2Point2.y, x3: line1Point1.x, y3: line1Point1.y)
-        if fabsf(area3) <= Math.epsilon {
+        if fabsf(area3) < Math.epsilon {
             if between(x1: line2Point1.x, y1: line2Point1.y, x2: line2Point2.x, y2: line2Point2.y, x3: line1Point1.x, y3: line1Point1.y) {
                 return true
             } else {
@@ -977,7 +1556,7 @@ struct Math {
             }
         }
         let area4 = triangleArea(x1: line2Point1.x, y1: line2Point1.y, x2: line2Point2.x, y2: line2Point2.y, x3: line1Point2.x, y3: line1Point2.y)
-        if fabsf(area4) <= Math.epsilon {
+        if fabsf(area4) < Math.epsilon {
             return between(x1: line2Point1.x, y1: line2Point1.y, x2: line2Point2.x, y2: line2Point2.y, x3: line1Point2.x, y3: line1Point2.y)
         }
         return ((area1 > 0.0) != (area2 > 0.0)) && ((area3 > 0.0) != (area4 > 0.0))
@@ -1021,6 +1600,13 @@ struct Math {
     
     static func lineSegmentDistanceSquaredToLineSegment(line1Point1: Point, line1Point2: Point, line2Point1: Point, line2Point2: Point) -> Float {
         
+        if lineSegmentIntersectsLineSegment(line1Point1: line1Point1,
+                                            line1Point2: line1Point2,
+                                            line2Point1: line2Point1,
+                                            line2Point2: line2Point2) {
+            return 0.0
+        }
+        
         let cp1_1 = Math.segmentClosestPoint(point: line1Point1, linePoint1: line2Point1, linePoint2: line2Point2)
         let cp1_2 = Math.segmentClosestPoint(point: line1Point2, linePoint1: line2Point1, linePoint2: line2Point2)
         let cp2_1 = Math.segmentClosestPoint(point: line2Point1, linePoint1: line1Point1, linePoint2: line1Point2)
@@ -1044,6 +1630,16 @@ struct Math {
     
     static func cross(x1: Float, y1: Float, x2: Float, y2: Float) -> Float {
         x1 * y2 - x2 * y1
+    }
+    
+    static func triangleIsClockwise(x1: Float, y1: Float,
+                                    x2: Float, y2: Float,
+                                    x3: Float, y3: Float) -> Bool {
+        if (x1 * y2 + x3 * y1 + x2 * y3 - x1 * y3 - x3 * y2 - x2 * y1) > 0.0 {
+            return false
+        } else {
+            return true
+        }
     }
     
     static func polygonIsClockwise(_ polygon: [Point]) -> Bool {
@@ -1071,30 +1667,6 @@ struct Math {
         let choice1 = larger - smaller
         let choice2 = ((count) - larger) + (smaller)
         return min(choice1, choice2)
-    }
-    
-    static func polygonIndexDistance(index1: UInt16, index2: UInt16, count: Int) -> Int {
-        return polygonIndexDistance(index1: Int(index1), index2: Int(index2), count: count)
-    }
-    
-    static func polygonIndexDistance(index1: Int, index2: UInt16, count: Int) -> Int {
-        return polygonIndexDistance(index1: index1, index2: Int(index2), count: count)
-    }
-    
-    static func polygonIndexDistance(index1: UInt16, index2: Int, count: Int) -> Int {
-        return polygonIndexDistance(index1: Int(index1), index2: index2, count: count)
-    }
-    
-    static func polygonIndexDistance(index1: Int16, index2: Int16, count: Int) -> Int {
-        return polygonIndexDistance(index1: Int(index1), index2: Int(index2), count: count)
-    }
-    
-    static func polygonIndexDistance(index1: Int, index2: Int16, count: Int) -> Int {
-        return polygonIndexDistance(index1: index1, index2: Int(index2), count: count)
-    }
-    
-    static func polygonIndexDistance(index1: Int16, index2: Int, count: Int) -> Int {
-        return polygonIndexDistance(index1: Int(index1), index2: index2, count: count)
     }
     
     static func polygonTourCrosses(index: Int, startIndex: Int, endIndex: Int) -> Bool {

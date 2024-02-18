@@ -46,7 +46,7 @@ struct ControlsView: View {
                             .overlay(RoundedRectangle(cornerRadius: 8.0).stroke(style: .init(lineWidth: 2.0)).foregroundStyle(Color(red: 0.64, green: 0.64, blue: 0.64)))
                             
                             Button(action: {
-                                let count = Int(sceneViewModel.polygonPointCountString) ?? 32
+                                let count = Int(sceneViewModel.polygonPointCountString) ?? 40
                                 sceneViewModel.generateRandomPolygon(width: sceneViewModel.width,
                                                                      height: sceneViewModel.height,
                                                                      count: count)

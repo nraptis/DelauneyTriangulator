@@ -23,7 +23,7 @@ struct ContainerView: View {
                                                          height: Float(geometry.size.height),
                                                          count: polygonCount)
                     
-                    let innerPointCount = Int(sceneViewModel.innerPointCountString) ?? 64
+                    let innerPointCount = Int(sceneViewModel.innerPointCountString) ?? 512
                     sceneViewModel.generateRandomPoints(width: Float(geometry.size.width),
                                                         height: Float(geometry.size.height),
                                                         count: innerPointCount)

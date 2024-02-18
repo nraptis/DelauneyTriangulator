@@ -9,66 +9,127 @@ import Foundation
 
 class DelauneyTriangulatorPartsFactory {
     
+    let DEBUG = false
+    
     ////////////////
     ///
-    ///
-    private var triangulationPoints = [TriangulationPoint]()
-    func depositPoint(_ point: TriangulationPoint) {
-        triangulationPoints.append(point)
+    private var triangulationPoints = [DelauneyTriangulationPoint]()
+    var triangulationPointCount = 0
+    var _maxDelauneyTriangulationPointCount = 0
+    func depositDelauneyTriangulationPoint(_ triangulationPoint: DelauneyTriangulationPoint) {
+        if DEBUG {
+            for checkIndex in 0..<triangulationPointCount {
+                if triangulationPoints[checkIndex] === triangulationPoint {
+                    print("already exists, double deposit DelauneyTriangulationPoint @ \(checkIndex) / \(triangulationPointCount)")
+                }
+            }
+        }
+        
+        while triangulationPoints.count <= triangulationPointCount {
+            triangulationPoints.append(triangulationPoint)
+        }
+        triangulationPoints[triangulationPointCount] = triangulationPoint
+        triangulationPointCount += 1
+        
+        if DEBUG {
+            if triangulationPointCount > _maxDelauneyTriangulationPointCount {
+                _maxDelauneyTriangulationPointCount = triangulationPointCount
+                print("new max DelauneyTriangulationPoint: \(_maxDelauneyTriangulationPointCount)")
+            }
+        }
     }
-    func withdrawPoint(x: Float, y: Float) -> TriangulationPoint {
-        if triangulationPoints.count > 0 {
-            let result = triangulationPoints[triangulationPoints.count - 1]
-            triangulationPoints.removeLast()
+    func withdrawDelauneyTriangulationPoint(x: Float, y: Float) -> DelauneyTriangulationPoint {
+        if triangulationPointCount > 0 {
+            triangulationPointCount -= 1
+            let result = triangulationPoints[triangulationPointCount]
             result.x = x
             result.y = y
             return result
         }
-        return TriangulationPoint(x: x, y: y)
+        return DelauneyTriangulationPoint(x: x, y: y)
     }
-    ///
     ///
     ////////////////
     
     ////////////////
     ///
-    ///
-    private var triangulationVertices = [TriangulationVertex]()
-    func depositVertex(_ vertex: TriangulationVertex) {
-        vertex.clear()
-        triangulationVertices.append(vertex)
+    private var triangulationVertices = [DelauneyTriangulationVertex]()
+    var triangulationVertexCount = 0
+    var _maxDelauneyTriangulationVertexCount = 0
+    func depositDelauneyTriangulationVertex(_ triangulationVertex: DelauneyTriangulationVertex) {
+        if DEBUG {
+            for checkIndex in 0..<triangulationVertexCount {
+                if triangulationVertices[checkIndex] === triangulationVertex {
+                    print("already exists, double deposit DelauneyTriangulationVertex @ \(checkIndex) / \(triangulationVertexCount)")
+                }
+            }
+        }
+        
+        while triangulationVertices.count <= triangulationVertexCount {
+            triangulationVertices.append(triangulationVertex)
+        }
+        triangulationVertices[triangulationVertexCount] = triangulationVertex
+        triangulationVertexCount += 1
+        
+        if DEBUG {
+            if triangulationVertexCount > _maxDelauneyTriangulationVertexCount {
+                _maxDelauneyTriangulationVertexCount = triangulationVertexCount
+                print("new max DelauneyTriangulationVertex: \(_maxDelauneyTriangulationVertexCount)")
+            }
+        }
     }
-    func withdrawVertex(point: TriangulationPoint) -> TriangulationVertex {
-        if triangulationVertices.count > 0 {
-            let result = triangulationVertices[triangulationVertices.count - 1]
-            triangulationVertices.removeLast()
+    func withdrawDelauneyTriangulationVertex(point: DelauneyTriangulationPoint) -> DelauneyTriangulationVertex {
+        if triangulationVertexCount > 0 {
+            triangulationVertexCount -= 1
+            let result = triangulationVertices[triangulationVertexCount]
             result.point = point
             point.vertex = result
             return result
         }
-        return TriangulationVertex(point: point)
+        return DelauneyTriangulationVertex(point: point)
     }
     ///
-    ///
     ////////////////
-    ///
+    
     
     ////////////////
     ///
     ///
-    private var triangulationEdges = [TriangulationEdge]()
-    func depositEdge(_ edge: TriangulationEdge) {
-        edge.clear()
-        triangulationEdges.append(edge)
+    private var triangulationEdges = [DelauneyTriangulationEdge]()
+    var triangulationEdgeCount = 0
+    var _maxDelauneyTriangulationEdgeCount = 0
+    func depositDelauneyTriangulationEdge(_ triangulationEdge: DelauneyTriangulationEdge) {
+        if DEBUG {
+            for checkIndex in 0..<triangulationEdgeCount {
+                if triangulationEdges[checkIndex] === triangulationEdge {
+                    print("already exists, double deposit DelauneyTriangulationEdge @ \(checkIndex) / \(triangulationEdgeCount)")
+                }
+            }
+        }
+        
+        triangulationEdge.clear()
+        
+        while triangulationEdges.count <= triangulationEdgeCount {
+            triangulationEdges.append(triangulationEdge)
+        }
+        triangulationEdges[triangulationEdgeCount] = triangulationEdge
+        triangulationEdgeCount += 1
+        
+        if DEBUG {
+            if triangulationEdgeCount > _maxDelauneyTriangulationEdgeCount {
+                _maxDelauneyTriangulationEdgeCount = triangulationEdgeCount
+                print("new max DelauneyTriangulationEdge: \(_maxDelauneyTriangulationEdgeCount)")
+            }
+        }
     }
-    func withdrawEdge(vertex: TriangulationVertex) -> TriangulationEdge {
-        if triangulationEdges.count > 0 {
-            let result = triangulationEdges[triangulationEdges.count - 1]
-            triangulationEdges.removeLast()
+    func withdrawDelauneyTriangulationEdge(vertex: DelauneyTriangulationVertex) -> DelauneyTriangulationEdge {
+        if triangulationEdgeCount > 0 {
+            triangulationEdgeCount -= 1
+            let result = triangulationEdges[triangulationEdgeCount]
             result.vertex = vertex
             return result
         }
-        return TriangulationEdge(vertex: vertex)
+        return DelauneyTriangulationEdge(vertex: vertex)
     }
     ///
     ///
@@ -78,18 +139,39 @@ class DelauneyTriangulatorPartsFactory {
     ////////////////
     ///
     ///
-    private var triangulationFaces = [TriangulationFace]()
-    func depositFace(_ face: TriangulationFace) {
-        triangulationFaces.append(face)
+    private var triangulationFaces = [DelauneyTriangulationFace]()
+    var triangulationFaceCount = 0
+    var _maxDelauneyTriangulationFaceCount = 0
+    func depositDelauneyTriangulationFace(_ triangulationFace: DelauneyTriangulationFace) {
+        if DEBUG {
+            for checkIndex in 0..<triangulationFaceCount {
+                if triangulationFaces[checkIndex] === triangulationFace {
+                    print("already exists, double deposit DelauneyTriangulationFace @ \(checkIndex) / \(triangulationFaceCount)")
+                }
+            }
+        }
+        
+        while triangulationFaces.count <= triangulationFaceCount {
+            triangulationFaces.append(triangulationFace)
+        }
+        triangulationFaces[triangulationFaceCount] = triangulationFace
+        triangulationFaceCount += 1
+        
+        if DEBUG {
+            if triangulationFaceCount > _maxDelauneyTriangulationFaceCount {
+                _maxDelauneyTriangulationFaceCount = triangulationFaceCount
+                print("new max DelauneyTriangulationFace: \(_maxDelauneyTriangulationFaceCount)")
+            }
+        }
     }
-    func withdrawFace(edge: TriangulationEdge) -> TriangulationFace {
-        if triangulationFaces.count > 0 {
-            let result = triangulationFaces[triangulationFaces.count - 1]
-            triangulationFaces.removeLast()
+    func withdrawDelauneyTriangulationFace(edge: DelauneyTriangulationEdge) -> DelauneyTriangulationFace {
+        if triangulationFaceCount > 0 {
+            triangulationFaceCount -= 1
+            let result = triangulationFaces[triangulationFaceCount]
             result.edge = edge
             return result
         }
-        return TriangulationFace(edge: edge)
+        return DelauneyTriangulationFace(edge: edge)
     }
     ///
     ///
@@ -97,26 +179,43 @@ class DelauneyTriangulatorPartsFactory {
     
     
     ////////////////
-        ///
-        ///
-    private var triangulationTriangles = [TriangulationTriangle]()
-    func depositTriangle(_ triangle: TriangulationTriangle) {
-        triangulationTriangles.append(triangle)
+    ///
+    ///
+    private var triangulationTriangles = [DelauneyTriangulationTriangle]()
+    var triangulationTriangleCount = 0
+    var _maxDelauneyTriangulationTriangleCount = 0
+    func depositDelauneyTriangulationTriangle(_ triangulationTriangle: DelauneyTriangulationTriangle) {
+        if DEBUG {
+            for checkIndex in 0..<triangulationTriangleCount {
+                if triangulationTriangles[checkIndex] === triangulationTriangle {
+                    print("already exists, double deposit DelauneyTriangulationTriangle @ \(checkIndex) / \(triangulationTriangleCount)")
+                }
+            }
+        }
+        
+        while triangulationTriangles.count <= triangulationTriangleCount {
+            triangulationTriangles.append(triangulationTriangle)
+        }
+        triangulationTriangles[triangulationTriangleCount] = triangulationTriangle
+        triangulationTriangleCount += 1
+        
+        if DEBUG {
+            if triangulationTriangleCount > _maxDelauneyTriangulationTriangleCount {
+                _maxDelauneyTriangulationTriangleCount = triangulationTriangleCount
+                print("new max DelauneyTriangulationTriangle: \(_maxDelauneyTriangulationTriangleCount)")
+            }
+        }
     }
-    func withdrawTriangle(point1: TriangulationPoint,
-                          point2: TriangulationPoint,
-                          point3: TriangulationPoint) -> TriangulationTriangle {
-        if triangulationTriangles.count > 0 {
-            let result = triangulationTriangles[triangulationTriangles.count - 1]
-            triangulationTriangles.removeLast()
+    func withdrawDelauneyTriangulationTriangle(point1: DelauneyTriangulationPoint, point2: DelauneyTriangulationPoint, point3: DelauneyTriangulationPoint) -> DelauneyTriangulationTriangle {
+        if triangulationTriangleCount > 0 {
+            triangulationTriangleCount -= 1
+            let result = triangulationTriangles[triangulationTriangleCount]
             result.point1 = point1
             result.point2 = point2
             result.point3 = point3
             return result
         }
-        return TriangulationTriangle(point1: point1,
-                                     point2: point2,
-                                     point3: point3)
+        return DelauneyTriangulationTriangle(point1: point1, point2: point2, point3: point3)
     }
     ///
     ///
@@ -126,22 +225,40 @@ class DelauneyTriangulatorPartsFactory {
     ////////////////
     ///
     ///
-    private var triangulationLineSegments = [TriangulationLineSegment]()
-    func depositLineSegment(_ lineSegment: TriangulationLineSegment) {
-        triangulationLineSegments.append(lineSegment)
-        lineSegment.clear()
+    private var triangulationLineSegments = [DelauneyTriangulationLineSegment]()
+    var triangulationLineSegmentCount = 0
+    var _maxDelauneyTriangulationLineSegmentCount = 0
+    func depositDelauneyTriangulationLineSegment(_ triangulationLineSegment: DelauneyTriangulationLineSegment) {
+        if DEBUG {
+            for checkIndex in 0..<triangulationLineSegmentCount {
+                if triangulationLineSegments[checkIndex] === triangulationLineSegment {
+                    print("already exists, double deposit DelauneyTriangulationLineSegment @ \(checkIndex) / \(triangulationLineSegmentCount)")
+                }
+            }
+        }
+        
+        while triangulationLineSegments.count <= triangulationLineSegmentCount {
+            triangulationLineSegments.append(triangulationLineSegment)
+        }
+        triangulationLineSegments[triangulationLineSegmentCount] = triangulationLineSegment
+        triangulationLineSegmentCount += 1
+        
+        if DEBUG {
+            if triangulationLineSegmentCount > _maxDelauneyTriangulationLineSegmentCount {
+                _maxDelauneyTriangulationLineSegmentCount = triangulationLineSegmentCount
+                print("new max DelauneyTriangulationLineSegment: \(_maxDelauneyTriangulationLineSegmentCount)")
+            }
+        }
     }
-    func withdrawLineSegment(point1: TriangulationPoint,
-                             point2: TriangulationPoint) -> TriangulationLineSegment {
-        if triangulationLineSegments.count > 0 {
-            let result = triangulationLineSegments[triangulationLineSegments.count - 1]
-            triangulationLineSegments.removeLast()
+    func withdrawDelauneyTriangulationLineSegment(point1: DelauneyTriangulationPoint, point2: DelauneyTriangulationPoint) -> DelauneyTriangulationLineSegment {
+        if triangulationLineSegmentCount > 0 {
+            triangulationLineSegmentCount -= 1
+            let result = triangulationLineSegments[triangulationLineSegmentCount]
             result.point1 = point1
             result.point2 = point2
             return result
         }
-        return TriangulationLineSegment(point1: point1,
-                                        point2: point2)
+        return DelauneyTriangulationLineSegment(point1: point1, point2: point2)
     }
     ///
     ///
